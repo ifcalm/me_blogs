@@ -80,18 +80,74 @@ objects目录
 
 ## git需要处理的一些情况
 * 理解 HEAD 和 branch
+  ```
+  git diff
+  ```
 * 怎么删除不需要的分支
+  ```
+  git branch -d dev  删除一个分支
+  git branch -D dev
+  ```
 * 怎么修改最新 commit 的 message
+  ```
+  git commit --amend "***"
+  ```
 * 怎么修改老旧文件的 commit 的 message
 * 怎样把连续的多个 commit 整理成一个
 * 怎样把间隔的几个 commit 合并成一个
 * 怎么比较暂存区和 HEAD 所含文件的差异
+  ```
+  git diff --cached   一定要加 --cached
+  ```
 * 怎样比较工作区和暂存区所含文件的差异
+  ```
+  git diff
+  git diff -- file.1 file.2
+  ```
 * 如何让暂存区恢复成和 HEAD 的一样
+  ```
+  git reset HEAD 取消暂存区的所有变更
+  ```
 * 如何让工作区的文件恢复为和暂存区一样
+  ```
+  git checkout -- index.php
+  ```
 * 怎样取消暂存区部分文件的更改
+  ```
+  git reset HEAD -- index.php
+  ```
 * 消除最近的几次提交
 * 看看不同提交分支的指定文件的差异
+  ```
+  git diff dev master -- index.php  比较一个文件在不同分支中的差异
+  ```
 * 正确删除文件的方法
+  ```
+  git rm index.php
+  ```
 * 开发中临时加塞了紧急任务怎么处理
+  ```
+  git stash        把文件存入一个区域
+  git statch list
+
+  git stash apply   把文件变更取出来
+  git stash pop
+  git stash list   查看 stash 的内容
+  ```
 * 如何指定不需要 git 管理的文件
+  ```
+  .gitignore 文件中包含的文件不会被 git 管理
+  ```
+
+## 如何将 git 仓库备份到本地
+```
+git clone --bare /Users/git_learning/.git lss.git   克隆一个不带工作区的仓库并命名为lss.git
+git clone --bare file:///Users/git_learning/.git lss.git  
+
+git remote -v  查看远程仓库信息
+git remote add git_one file:///Users/git_learning/git_one.git  将本地仓库 git_one 添加到远端
+
+git push git_one  将仓库 push 到远端
+```
+
+
