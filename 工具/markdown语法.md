@@ -47,3 +47,11 @@
 ## 图片
 插入图片语法：
 `![图片描述](图片地址 "图片 title")`
+
+示例：
+```
+![leetcode](https://github.com/jiexialss/me_blogs/blob/master/%E5%B7%A5%E5%85%B7/images/markdown_1.png "leetcode题解群聊")
+```
+效果如下图所示：
+
+![leetcode](https://github.com/jiexialss/me_blogs/blob/master/%E5%B7%A5%E5%85%B7/images/markdown_1.png "leetcode题解群聊")
