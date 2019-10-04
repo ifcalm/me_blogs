@@ -1731,3 +1731,377 @@ func main() {
      do(true)
 }
 ```
+
+## Stringer
+fmt 包中定义的 `Stringer` 是最普遍的接口之一。
+```
+type Stringer interface {
+    String() string
+}
+```
+`Stringer` 是一个可以用字符串描述自己的类型。fmt 包（还有很多包）都通过此接口来打印值。
+```
+package main
+import "fmt"
+
+type Person struct {
+     Name string
+     Age int
+}
+
+func (p Person) String() string {
+     return fmt.Sprintf("%v (%v years)", p.Name, p.Age)
+}
+
+func main() {
+     a := Person{"Arthur Dent", 42}
+     z := Person{"Zaphod Beeblebrox", 9001}
+     fmt.Println(a, z)
+}
+```
+
+## 错误
+Go 程序使用 error 值来表示错误状态。
+与 fmt.Stringer 类似，error 类型是一个内建接口：
+```
+type error interface {
+    Error() string
+}
+```
+（与 fmt.Stringer 类似，fmt 包在打印值时也会满足 error。）
+通常函数会返回一个 error 值，调用的它的代码应当判断这个错误是否等于 nil 来进行错误处理。
+```
+i, err := strconv.Atoi("42")
+if err != nil {
+    fmt.Printf("couldn't convert number: %v\n", err)
+    return
+}
+fmt.Println("Converted integer:", i)
+```
+error 为 nil 时表示成功；非 nil 的 error 表示失败。
+
+```
+package main
+import (
+     "fmt"
+     "time"
+)
+
+type MyError struct {
+     When time.Time
+     What string
+}
+
+func (e *MyError) Error() string {
+     return fmt.Sprintf("at %v, %s",
+     e.When, e.What)
+}
+
+func run() error {
+     return &MyError{
+         time.Now(),
+         "it didn't work",
+     }
+}
+
+func main() {
+     if err := run(); err != nil {
+         fmt.Println(err)
+     }
+}
+```
+
+## Reader
+io 包指定了 `io.Reader` 接口，它表示从数据流的末尾进行读取。
+Go 标准库包含了该接口的许多实现，包括文件、网络连接、压缩和加密等等。
+`io.Reader` 接口有一个 Read 方法：
+`func (T) Read(b []byte) (n int, err error)`
+Read 用数据填充给定的字节切片并返回填充的字节数和错误值。在遇到数据流的结尾时，它会返回一个 `io.EOF` 错误。
+示例代码创建了一个 `strings.Reader` 并以每次 8 字节的速度读取它的输出。
+
+```
+package main
+import (
+     "fmt"
+     "io"
+     "strings"
+)
+
+func main() {
+     r := strings.NewReader("Hello, Reader!")
+
+     b := make([]byte, 8)
+     for {
+         n, err := r.Read(b)
+         fmt.Printf("n = %v err = %v b = %v\n", n, err, b)
+         fmt.Printf("b[:n] = %q\n", b[:n])
+         if err == io.EOF {
+             break
+         }
+     }
+}
+```
+
+## 图像
+`image` 包定义了 `Image` 接口：
+```
+package image
+
+type Image interface {
+    ColorModel() color.Model
+    Bounds() Rectangle
+    At(x, y int) color.Color
+}
+```
+注意: `Bounds` 方法的返回值 `Rectangle` 实际上是一个 `image.Rectangle`，它在 `image` 包中声明。
+`color.Color` 和 `color.Model` 类型也是接口，但是通常因为直接使用预定义的实现 `image.RGBA` 和 `image.RGBAModel` 而被忽视了。这些接口和类型由 `image/color` 包定义。
+
+```
+package main
+import (
+     "fmt"
+     "image"
+)
+
+func main() {
+     m := image.NewRGBA(image.Rect(0, 0, 100, 100))
+     fmt.Println(m.Bounds())
+     fmt.Println(m.At(0, 0).RGBA())
+}
+```
+
+## Go 程
+Go 程（goroutine）是由 Go 运行时管理的轻量级线程。
+`go f(x, y, z)`
+会启动一个新的 Go 程并执行
+`f(x, y, z)`
+f, x, y 和 z 的求值发生在当前的 Go 程中，而 f 的执行发生在新的 Go 程中。
+Go 程在相同的地址空间中运行，因此在访问共享的内存时必须进行同步。sync 包提供了这种能力，不过在 Go 中并不经常用到，因为还有其它的办法。
+
+```
+package main
+import (
+     "fmt"
+     "time"
+)
+
+func say(s string) {
+     for i := 0; i < 5; i++ {
+         time.Sleep(100 * time.Millisecond)
+         fmt.Println(s)
+     }
+}
+
+func main() {
+     go say("world")
+     say("hello")
+}
+```
+
+## 信道
+信道是带有类型的管道，你可以通过它用信道操作符 `<-` 来发送或者接收值。
+```
+ch <- v    // 将 v 发送至信道 ch。
+v := <-ch  // 从 ch 接收值并赋予 v。
+```
+（“箭头”就是数据流的方向。）
+和映射与切片一样，信道在使用前必须创建：
+`ch := make(chan int)`
+默认情况下，发送和接收操作在另一端准备好之前都会阻塞。这使得 Go 程可以在没有显式的锁或竞态变量的情况下进行同步。
+以下示例对切片中的数进行求和，将任务分配给两个 Go 程。一旦两个 Go 程完成了它们的计算，它就能算出最终的结果。
+
+```
+package main
+import "fmt"
+
+func sum(s []int, c chan int) {
+     sum := 0
+     for _, v := range s {
+         sum += v
+     }
+     c <- sum // 将和送入 c
+}
+
+func main() {
+     s := []int{7, 2, 8, -9, 4, 0}
+
+     c := make(chan int)
+     go sum(s[:len(s)/2], c)
+     go sum(s[len(s)/2:], c)
+     x, y := <-c, <-c // 从 c 中接收
+
+     fmt.Println(x, y, x+y)
+}
+```
+
+## 带缓冲的信道
+信道可以是 带缓冲的。将缓冲长度作为第二个参数提供给 `make` 来初始化一个带缓冲的信道：
+`ch := make(chan int, 100)`
+仅当信道的缓冲区填满后，向其发送数据时才会阻塞。当缓冲区为空时，接受方会阻塞。
+修改示例填满缓冲区，然后看看会发生什么。
+
+```
+package main
+import "fmt"
+
+func main() {
+     ch := make(chan int, 2)
+     ch <- 1
+     ch <- 2
+     fmt.Println(<-ch)
+     fmt.Println(<-ch)
+}
+```
+
+## range 和 close
+发送者可通过 `close` 关闭一个信道来表示没有需要发送的值了。接收者可以通过为接收表达式分配第二个参数来测试信道是否被关闭：若没有值可以接收且信道已被关闭，那么在执行完
+`v, ok := <-ch`
+之后 ok 会被设置为 false。
+循环 `for i := range c` 会不断从信道接收值，直到它被关闭。
+*注意：* 只有发送者才能关闭信道，而接收者不能。向一个已经关闭的信道发送数据会引发程序恐慌（panic）。
+*还要注意：* 信道与文件不同，通常情况下无需关闭它们。只有在必须告诉接收者不再有需要发送的值时才有必要关闭，例如终止一个 range 循环。
+
+```
+package main
+import (
+     "fmt"
+)
+
+func fibonacci(n int, c chan int) {
+     x, y := 0, 1
+     for i := 0; i < n; i++ {
+         c <- x
+         x, y = y, x+y
+     }
+     close(c)
+}
+
+func main() {
+     c := make(chan int, 10)
+     go fibonacci(cap(c), c)
+     for i := range c {
+         fmt.Println(i)
+     }
+}
+```
+
+## select 语句
+`select` 语句使一个 Go 程可以等待多个通信操作。
+select 会阻塞到某个分支可以继续执行为止，这时就会执行该分支。当多个分支都准备好时会随机选择一个执行。
+
+```
+package main
+import "fmt"
+
+func fibonacci(c, quit chan int) {
+     x, y := 0, 1
+     for {
+         select {
+             case c <- x:
+                 x, y = y, x+y
+             case <-quit:
+                 fmt.Println("quit")
+             return
+         }
+     }
+}
+
+func main() {
+     c := make(chan int)
+     quit := make(chan int)
+     go func() {
+         for i := 0; i < 10; i++ {
+             fmt.Println(<-c)
+         }
+     quit <- 0
+     }()
+     fibonacci(c, quit)
+}
+```
+
+当 `select` 中的其它分支都没有准备好时，`default` 分支就会执行。
+为了在尝试发送或者接收时不发生阻塞，可使用 `default` 分支：
+```
+elect {
+case i := <-c:
+    // 使用 i
+default:
+    // 从 c 中接收会阻塞时执行
+}
+```
+
+```
+package main
+import (
+     "fmt"
+     "time"
+)
+
+func main() {
+     tick := time.Tick(100 * time.Millisecond)
+     boom := time.After(500 * time.Millisecond)
+     for {
+         select {
+             case <-tick:
+                 fmt.Println("tick.")
+             case <-boom:
+                 fmt.Println("BOOM!")
+             return
+             default:
+                 fmt.Println(" .")
+                 time.Sleep(50 * time.Millisecond)
+         }
+     }
+}
+```
+
+## sync.Mutex
+我们已经看到信道非常适合在各个 Go 程间进行通信。
+但是如果我们并不需要通信呢？比如说，若我们只是想保证每次只有一个 Go 程能够访问一个共享的变量，从而避免冲突？
+这里涉及的概念叫做 **互斥**（mutual exclusion） ，我们通常使用 **互斥锁（Mutex）** 这一数据结构来提供这种机制。
+Go 标准库中提供了 sync.Mutex 互斥锁类型及其两个方法：
++ Lock
++ Unlock
+我们可以通过在代码前调用 `Lock` 方法，在代码后调用 `Unlock`方法来保证一段代码的互斥执行。
+我们也可以用 defer 语句来保证互斥锁一定会被解锁。
+
+```
+package main
+import (
+     "fmt"
+     "sync"
+     "time"
+)
+
+// SafeCounter 的并发使用是安全的。
+type SafeCounter struct {
+     v map[string]int
+     mux sync.Mutex
+}
+
+// Inc 增加给定 key 的计数器的值。
+func (c *SafeCounter) Inc(key string) {
+     c.mux.Lock()
+     // Lock 之后同一时刻只有一个 goroutine 能访问 c.v
+     c.v[key]++
+     c.mux.Unlock()
+}
+
+// Value 返回给定 key 的计数器的当前值。
+func (c *SafeCounter) Value(key string) int {
+     c.mux.Lock()
+     // Lock 之后同一时刻只有一个 goroutine 能访问 c.v
+     defer c.mux.Unlock()
+     return c.v[key]
+}
+
+func main() {
+     c := SafeCounter{v: make(map[string]int)}
+     for i := 0; i < 1000; i++ {
+         go c.Inc("somekey")
+     }
+
+     time.Sleep(time.Second)
+     fmt.Println(c.Value("somekey"))
+}
+```
