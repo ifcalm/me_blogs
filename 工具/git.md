@@ -150,4 +150,69 @@ git remote add git_one file:///Users/git_learning/git_one.git  将本地仓库
 git push git_one  将仓库 push 到远端
 ```
 
+## 本机与github配置公钥私钥
+** 检查本地是否配置 ssh **
 
+`cd ~/.ssh`  (win 系统)
+
+** 生成一个 SSH Key **
+
+`ssh-keygen -t rsa -b 4096 "your_email@example.com"`
+
+## 把本地仓库同步到 Github
+```
+git remote -v    查看远程仓库信息
+git remote add git github git@github.com:jiexialss/thinking.git
+git push github --all    把本地仓库github 推到远端仓库
+
+git fetch github master  把代码从远端的master分支拉回来，但不进行关联合并
+git merge dev    合并分支到当前分支
+git pull         把代码拉下来并进行何把
+
+git checkout dev 切换分支到dev
+```
+
+## 需要重点关注的问题
+
+### 不同人修改了不同文件如何处理
+
+### 不同人修改了同文件的不同区域如何处理
+
+### 不同人修改了同文件的同一区域如何处理
+`会有冲突产生`
+
+### 同时变更了文件名和文件内容如何处理
+`git pull`
+
+### 把同一文件改成不同的文件名如何处理
+`会有冲突产生`
+
+### 禁止向集成分支之下 push -f 操作
+`push -f 是强制推到集成分支上`
+
+### 禁止向集成分支执行变更历史的操作
+
+### GitHub 都有哪些核心功能
+
+### 如何高效的搜索到感兴趣的开源项目
+
+### 怎样在github 上搭建个人博客
+
+### 开源项目怎么保证代码质量
+
+### GitHub 为什么需要组织类型的仓库
+
+### GitHub创建团队的项目
+
+### 怎样选择适合自己团队的工作流
+`Git Flow` `GitHub Flow` `GitLab Flow`
+
+### 如何选择合适的分支集成策略
+
+### 启用 issue 跟踪需求和任务
+
+### 项目内部怎么实施 code review 
+
+### 团队协作如何做多分支的集成
+
+## GitLab
