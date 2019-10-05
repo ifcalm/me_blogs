@@ -99,3 +99,47 @@ import (
 `import  _ "fmt"` 表示不使用该包，而是只是使用该包的init函数，并不显示的使用该包的其他内容。注意：这种形式的import，当import时就执行了fmt包中的init函数，而不能够使用该包的其他函数。
 
 ## 5. map
+map 是 go 内置 的关联数据类型，也可以称为 哈希 或者 字典。
+```
+m := make(map[string]int) //创建一个空 map
+
+//先声明，在使用 make函数创建
+var m1 map[string]string
+m1 = make(map[string]string)
+
+//赋值
+m1["a"] = "aa"
+m1["b"] = "bb"
+
+//初始化 + 赋值
+m2 := map[string]string{
+    "a": "aa",
+    "b": "bb",
+}
+
+//查找键值是否存在
+if v, ok := m1["a"]; ok {
+    fmt.Println(v)
+} else {
+    fmt.Println("key Not Found")
+}
+
+//遍历map
+for k, v := range m1 {
+    fmt.Println(k, v)
+}
+
+//删除键值
+delete(m1, "a")
+```
+
+## 6. func
+func 用于定义函数
+
+```
+func test(a, b int) int {
+    return a + b
+}
+```
+
+## 7. return
