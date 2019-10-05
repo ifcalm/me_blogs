@@ -96,6 +96,6 @@ import (
 
 `import . "fmt"` 将fmt启用别名"."，这样就可以直接使用其内容，而不用再添加fmt，如fmt.Println可以直接写成Println
 
-`import  _ "fmt"` 表示不使用该包，而是只是使用该包的`init`函数，并不显示的使用该包的其他内容。注意：这种形式的`import`，当`import`时就执行了fmt包中的init函数，而不能够使用该包的其他函数。
+`import  _ "fmt"` 表示不使用该包，而是只是使用该包的init函数，并不显示的使用该包的其他内容。注意：这种形式的import，当import时就执行了fmt包中的init函数，而不能够使用该包的其他函数。
 
 ## 5. map
