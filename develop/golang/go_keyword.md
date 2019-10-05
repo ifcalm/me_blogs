@@ -65,3 +65,37 @@ go 的常量定义可以限定常量类型，也可以不指定。
 
 
 ## 3. package
+go 用 package 来定义一个包，包是函数和数据的集合。文件名不需要和包名一致。包名的约定是使用小写字符，包可以由多个文件组成。
+
+当函数或者变量首字母大写时，会被导出，可在外部直接调用。
+
+golang package是基本的管理单元,同一个package下面，可以有非常多的不同文件，只要 每个文件的头部都有 如 `package xxx` 的相同name，
+
+就可以 在主方法中使用 `xxx.Method()`调用不同文件中的方法了。
+
+文件夹名字可以和这个package 名称不一致
+
+```
+package main
+```
+
+## 4. import
+import 用于引入一个包
+
+```
+import "fmt"
+import "time"
+
+import (
+    "fmt"
+    "time"
+)
+```
+
+`import f "fmt"` 导入fmt，并给他启别名ｆ
+
+`import . "fmt"` 将fmt启用别名"."，这样就可以直接使用其内容，而不用再添加fmt，如fmt.Println可以直接写成Println
+
+`import  _ "fmt"` 表示不使用该包，而是只是使用该包的`init`函数，并不显示的使用该包的其他内容。注意：这种形式的`import`，当`import`时就执行了fmt包中的init函数，而不能够使用该包的其他函数。
+
+## 5. map
