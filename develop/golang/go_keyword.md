@@ -495,4 +495,17 @@ for {
 for 循环将一直执行，直到在循环体内使用了 break 或者 return 来跳出循环
 ```
 
-## 13-14. if && else
+## 13-14. if , else
+if 支持初始化语句，可定义代码块局部变量
+
+```
+if num := 9; num < 0 {
+    fmt.Println(1)
+} else if num < 10 {
+    fmt.Println(2)
+} else {
+    fmt.Println(3)
+}
+```
+
+## 15-16-17. switch , case , default
