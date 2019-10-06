@@ -705,3 +705,109 @@ func main() {
 ```
 
 ## 23. go
+Golang 在语言层面对并发编程提供支持，一种类似协程，称作 goroutine 的机制。
+
+只需在函数调用语句前添加 `go` 关键字，就可创建并发执行单元。开发人员无需了解任何执行细节，调度器会自动将其安排到合适的系统线程上执行。goroutine 是一种非常轻量级的实现，可在单个进程里执行成千上万的并发任务。
+
+```
+func main() {
+    go func() {
+        println("Hello, World")
+    }()
+
+    time.Sleep(1 * time.Second)
+}
+```
+
+## 24. select
+Go的select关键字可以让你同时等待多个通道操作，将协程（goroutine），通道（channel）和select结合起来构成了Go的一个强大特性
+
+```
+func main() {
+
+	// 本例中，我们从两个通道中选择
+	c1 := make(chan string)
+	c2 := make(chan string)
+
+	// 为了模拟并行协程的阻塞操作，我们让每个通道在一段时间后再写入一个值
+	go func() {
+		time.Sleep(time.Second * 1)
+		c1 <- "one"
+	}()
+	go func() {
+		time.Sleep(time.Second * 2)
+		c2 <- "two"
+	}()
+
+	// 我们使用select来等待这两个通道的值，然后输出
+	for i := 0; i < 2; i++ {
+		select {
+		case msg1 := <-c1:
+			fmt.Println("received", msg1)
+		case msg2 := <-c2:
+			fmt.Println("received", msg2)
+		}
+	}
+}
+```
+
+每个case都必须是一个通信
+
+所有channel表达式都会被求值
+
+所有被发送的表达式都会被求值
+
+如果任意某个通信可以进行，它就执行；其他被忽略。
+
+如果有多个case都可以运行，Select会随机公平地选出一个执行。其他不会执行。
+
+否则,如果有default子句，则执行该语句。
+
+如果没有default字句，select将阻塞，直到某个通信可以运行；Go不会重新对channel或值进行求值。
+
+select可以监听channel的数据流动
+select的用法与switch语法非常类似，由select开始的一个新的选择块，每个选择条件由case语句来描述
+
+与switch语句可以选择任何使用相等比较的条件相比，select由比较多的限制，其中最大的一条限制就是每个case语句里必须是一个IO操作
+
+在一个select语句中，Go会按顺序从头到尾评估每一个发送和接收的语句。
+
+如果其中的任意一个语句可以继续执行（即没有被阻塞），那么就从那些可以执行的语句中任意选择一条来使用。
+如果没有任意一条语句可以执行（即所有的通道都被阻塞），那么有两种可能的情况：
+* 如果给出了default语句，那么就会执行default的流程，同时程序的执行会从select语句后的语句中恢复。
+* 如果没有default语句，那么select语句将被阻塞，直到至少有一个case可以进行下去。
+
+#### Golang select的使用及典型用法
+
+select是Go中的一个控制结构，类似于switch语句，用于处理异步IO操作。select会监听case语句中channel的读写操作，当case中channel读写操作为非阻塞状态（即能读写）时，将会触发相应的动作。
+
+select中的case语句必须是一个channel操作
+
+select中的default子句总是可运行的。
+
+如果有多个case都可以运行，select会随机公平地选出一个执行，其他不会执行。
+如果没有可运行的case语句，且有default语句，那么就会执行default的动作。
+如果没有可运行的case语句，且没有default语句，select将阻塞，直到某个case通信可以运行
+
+```
+func main() {
+	var c1, c2, c3 chan int
+	var i1, i2 int
+	select {
+	case i1 = <-c1:
+		fmt.Printf("received ", i1, " from c1\n")
+	case c2 <- i2:
+		fmt.Printf("sent ", i2, " to c2\n")
+	case i3, ok := (<-c3):
+		if ok {
+			fmt.Printf("received ", i3, " from c3\n")
+		} else {
+			fmt.Printf("c3 is closed\n")
+		}
+	default:
+		fmt.Printf("no communication\n")
+	}
+}
+```
+
+## 25. chan
