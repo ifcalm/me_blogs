@@ -343,3 +343,62 @@ type 有如下几种用法：
   ```
 
 ## 10. struct
+go 的结构体 是各个字段 类型 的集合，是值类型
+
+struct 的基本用法
+```
+type Person struct {
+    Name string
+    Age int
+}
+
+func main() {
+    p := Persion{
+        Name: "lss",
+        Age: 20,
+    }
+    p.Age = 24
+    fmt.Println(p)
+}
+```
+
+struct 支持嵌入式结构
+```
+type Person struct {
+    Name string
+}
+type User struct {
+    Person
+    Age int
+}
+
+func main() {
+    u := User {
+        Person: Person {
+            Name: "lss",
+        },
+        Age: 24,
+    }
+    fmt.Println(u.Age)
+    fmt.Println(u.Person.Name)
+}
+```
+通过变量名，使用逗号(.)，可以访问结构体类型中的字段，或为字段赋值，也可以对字段进行取址(&)操作。
+
+如果想在一个包中访问另一个包中结构体的字段，则必须是大写字母开头的变量，即可导出的变量
+
+除字段名称和数据类型外，还可以使用反引号为结构体字段声明元信息，这种元信息称为Tag，用于编译阶段关联到字段当中
+```
+type Member struct {
+    Id     int    `json:"id"`
+    Name   string `json:"name"`
+    Email  string `json:"email"`
+    Gender int    `json:"gender"`
+    Age    int    `json:"age"`
+}
+```
+
+结构体与数组一样，是复合类型，无论是作为实参传递给函数时，还是赋值给其他变量，都是值传递，即复一个副本。
+
+
+## 11. interface
