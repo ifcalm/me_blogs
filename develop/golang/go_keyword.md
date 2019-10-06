@@ -563,3 +563,81 @@ switch i {
 ```
 
 ## 19-20. break , continue
+break 是跳出当前循环，并开始执行循环之后的语句
+
+continue 是跳过该次循环，继续下次循环
+
+```
+func main() {
+    var a int = 10
+
+    for a < 20 {
+        fmt.Println(a)
+        a++
+        if a > 15 {
+            break    //使用 break 语句跳出循环
+        }
+    }
+}
+```
+
+break label语句：我们在 for 多层嵌套时，有时候需要直接跳出所有嵌套循环，这时候可以用到 go 的 label 了
+```
+func main() {
+    fmt.Println("1")
+
+Exit:
+    for i := 0; i < 9; i++ {
+        for j := 0; j < 9; j++ {
+            if i + j > 15 {
+                fmt.Println("exit")
+                break Exit
+            }
+        }
+    }
+}
+
+label要写在for循环的开始而不是结束的地方
+```
+
+continue 不是跳出循环，而是跳过当前循环执行下一次循环语句
+
+```
+func main() {
+    var a int = 10
+
+    for a < 20 {
+        if a == 15 {
+            a = a + 1
+            continue
+        }
+        fmt.Printlf("a value is : %d\n", a)
+        a++
+    }
+}
+```
+
+配合标签，break 和 continue 可在多级嵌套循环中跳出
+```
+func main() {
+L1:
+	for x := 0; x < 3; x++ {
+	L2:
+		for y := 0; y < 5; y++ {
+			if y > 2 {
+				continue L2
+			}
+			if x > 1 {
+				break L1
+			}
+
+			print(x, ":", y, " ")
+		}
+		println()
+	}
+}
+```
+
+break 可用于 for、switch、select，而 continue 仅能用于 for 循环
+
+## 21. goto
