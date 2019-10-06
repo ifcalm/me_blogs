@@ -464,3 +464,35 @@ func main() {
 ```
 
 ## 12. for
+for 是 Go 中唯一的循环结构
+
+以下是最基本的几种使用方式：
+
+```
+i := 1
+for i <= 3 {
+    fmt.Println(i)
+    i = i + 1
+}
+
+类似于 while
+```
+
+```
+for i := 0; i <= 10; i++ {
+    fmt.Println(i)
+}
+
+经典的 for 循环
+```
+
+```
+for {
+    fmt.Println("loop")
+    break
+}
+
+for 循环将一直执行，直到在循环体内使用了 break 或者 return 来跳出循环
+```
+
+## 13-14. if && else
