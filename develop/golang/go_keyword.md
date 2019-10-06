@@ -509,3 +509,57 @@ if num := 9; num < 0 {
 ```
 
 ## 15-16-17. switch , case , default
+Go的switch非常灵活，表达式不必是常量或整数，执行的过程从上至下，直到找到匹配项；而如果switch没有表达式，它会匹配true。 Go里面switch默认相当于每个case最后带有break，匹配成功后不会自动向下执行其他case，而是跳出整个switch
+
+```
+switch i {
+    case 0:
+        fmt.Println("0")
+    case 1:
+        fmt.Println("1")
+    case 2,3, 4:
+        fmt.Println("2,3,4")
+    default:
+        fmt.Println("Default")
+}
+```
+
+switch后面的表达式不是必需的
+
+```
+switch {
+    case 0 <= num && num <= 3:
+        fmt.Println("0-3")
+    case 4 <= num && num <= 6:
+        fmt.Println("4-6")
+}
+
+可以不设定switch之后的条件表达式，在此种情况下，整个switch结构与多个if...else...的逻辑作用等同
+
+只有在case中明确添加fallthrough关键字，才会继续执行紧跟的下一个case
+```
+
+## 18. fallthrough
+在switch中，使用 `fallthrough` 可以强制执行后面的case代码
+
+```
+switch i { 
+    case 0: 
+        fmt.Printf("0")
+        fallthrough
+    case 1: 
+        fmt.Printf("1")
+        fallthrough
+    case 2: 
+        fallthrough 
+    case 3: 
+        fmt.Printf("3")
+        fallthrough
+    case 4, 5, 6: 
+        fmt.Printf("4, 5, 6") 
+    default: 
+        fmt.Printf("Default") 
+} 
+```
+
+## 19-20. break , continue
