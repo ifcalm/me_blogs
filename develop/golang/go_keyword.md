@@ -402,3 +402,65 @@ type Member struct {
 
 
 ## 11. interface
+interface 是一种具有一组方法的类型，这些方法定义了 interface 的行为。
+
+如果一个类型实现了一个 interface 中的所有方法，我们就说实现了该 interface。
+
+所以所有类型都实现了 empty interface，因为任何一种类型至少实现了 0 个方法。go 没有显式的关键字用来实现 interface，只需要实现 interface 包含的方法即可。
+
+接口的定义与基本操作：
+```
+type Dog interface {
+    Category()
+}
+
+type Lss struct {
+    Name string
+}
+
+func (l Lss) Category() {
+    fmt.Println("帅帅")
+}
+
+func test(a Dog) {
+    fmt.Println("ok")
+}
+
+func main() {
+    l : Lss{"很帅"}
+    l.Category()
+    test(l)
+}
+```
+
+当我们需要使用复杂结构关系的时候，我们就会需要用到嵌入接口
+
+```
+type Dog interface {
+    Animal
+}
+
+type Animal interface {
+    Category()
+}
+```
+
+#### 类型断言
+一个 interface 被多种类型实现时，有时候我们需要区分 interface 的变量究竟存储哪种类型的值
+
+`value, ok := em.(T)`，em 是 interface 类型的变量，T代表要断言的类型，value 是 interface 变量存储的值，ok 是 bool 类型表示是否为该断言的类型 T
+
+#### 空接口
+空接口 interface{} 没有任何方法签名，也就意味着任何类型都实现了空接口。其作用类似于面向对象语言中的根对象 Object 
+```
+func Print(v interface{}) {
+  fmt.Println(v)
+}
+
+func main() {
+  Print(1)
+  Print("Hello, World")
+}
+```
+
+## 12. for
