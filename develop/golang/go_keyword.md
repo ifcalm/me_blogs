@@ -1,5 +1,9 @@
 # golang 的 25 个关键字
 
+*****
+var , const , package , import , map , func , return , defer , type , struct , interface , for , if , else , switch , case , default , fallthrough , break , continue , goto , range , go , select , chan
+
+*****
 ## 1. var
 `var` 是用于定义变量的
 
