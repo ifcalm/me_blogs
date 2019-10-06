@@ -811,3 +811,15 @@ func main() {
 ```
 
 ## 25. chan
+channel**通道**是golang的一种重要特性，正是因为channel的存在才使得golang不同于其它语言。channel使得并发编程变得简单容易有趣
+
+一个channel可以理解为一个先进先出的消息队列
+
+创建 channel 有以下几种方式：
+
+```
+var ch chan string
+ch := make(chan string)
+ch := make(chan string, 10)
+```
+
