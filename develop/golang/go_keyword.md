@@ -641,3 +641,67 @@ L1:
 break 可用于 for、switch、select，而 continue 仅能用于 for 循环
 
 ## 21. goto
+goto 语句将控制转移到被标记的语句，goto 是调整执行位置
+
+Go 语言的 goto 语句可以无条件地转移到过程中指定的行。
+
+goto语句通常与条件语句配合使用。可用来实现条件转移， 构成循环，跳出循环体等功能。
+
+但是，在结构化程序设计中一般不主张使用goto语句， 以免造成程序流程的混乱，使理解和调试程序都产生困难
+
+```
+func main() {
+    var a int = 10
+
+    LOOP: for a < 20 {
+        if a == 15 {
+            a = a + 1
+            goto LOOP
+        }
+
+        fmt.Println(a)
+        a++
+    }
+}
+```
+
+Golang支持在函数内 goto 跳转
+
+## 22. range
+Golang range类似迭代器操作，返回 (索引, 值) 或 (键, 值)。
+
+range 会复制对象
+
+for 循环的 range 格式可以对 slice、map、数组、字符串等进行迭代循环。格式如下：
+```
+for key, value := range oldMap {
+    newMap[key] = value
+}
+```
+
+可以忽略不想要的返回值，或使用 "_" 这个特殊变量
+
+```
+func main() {
+    s := "abc"
+
+    for i := range s {
+        println(s[i])
+    }
+
+    for _, c := range s {
+        println(c)
+    }
+
+    for range s {
+
+    }
+
+    m := map[string]int{"a": 1, "b": 2}
+    for k, v := range m {
+        println(k, v)
+    }
+}
+```
+
+## 23. go
