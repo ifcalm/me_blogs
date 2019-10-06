@@ -196,3 +196,150 @@ return 用在函数内部，退出函数执行过程
   ```
 
 ## 8. defer
+defer 用于资源的释放，会在函数返回之前进行调用
+```
+func test() {
+    f, err := os.Open(filename)
+    if err != nil {
+        panic(err)
+    }
+    defer f.Close()
+}
+```
+如果有多个defer表达式，调用顺序类似于栈，越后面的defer表达式越先被调用，即后入先出的规则。
+```
+func test() {
+    defer fmt.Println(1)
+    defer fmt.Println(2)
+}
+
+输出结果为：
+2
+1
+```
+
+在golang当中，defer代码块会在函数调用链表中增加一个函数调用。这个函数调用不是普通的函数调用，而是会在函数正常返回，也就是return之后添加一个函数调用。因此，defer通常用来释放函数内部变量
+
+### defer 使用规则
+ * 当 defer 被声明时，其参数就会被实时解析
+  
+   ```
+   func a() {
+       i := 0
+       defer fmt.Println(i)
+       i++
+       return
+   }
+
+   defer 函数会在 return 之后被调用，那么这段函数执行完之后，是不用应该输出1呢？
+   结果输出的是 0，
+   这是因为虽然我们在defer后面定义的是一个带变量的函数: fmt.Println(i). 但这个变量(i)在defer被声明的时候，就已经确定其确定的值了。
+   ```
+   我们继续定义一个 defer ：
+   ```
+   func a() {
+       i := 0
+
+       defer fmt.Println(i) //输出0，因为此时 i 就是0
+
+       i++
+
+       defer fmt.Println(i) //输出1，因为此时 i 为 1
+
+       return
+   }
+   ```
+   通过运行结果，可以看到defer输出的值，就是定义时的值。而不是defer真正执行时的变量值
+
+ * defer 执行顺序是先进后出
+   当同时定义了多个defer代码块时，golang按照先定义后执行的顺序依次调用defer
+   ```
+   func b() {
+       for i := 0; i < 4; i++ {
+           defer fmt.Println(i)
+       }
+   }
+
+   按照先进后出的原则，依次输出 3 2 1 0
+   ```
+ * defer 可以读取有名返回值
+   ```
+   func c() (i int) {
+       defer func() { i++ }()
+       return 1
+   }
+
+   当执行return 1 之后，i的值就是1. 此时此刻，defer代码块开始执行，对i进行自增操作。 因此输出2.
+   ```
+   我们说过defer是在return调用之后才执行的。 这里需要明确的是defer代码块的作用域仍然在函数之内，结合上面的函数也就是说，defer的作用域仍然在c函数之内。因此defer仍然可以读取c函数内的变量
+
+
+## 9. type
+type 关键词 主要是用于定义类型的
+
+type 有如下几种用法：
+* 定义结构体
+
+  结构体是用户自定义的一种抽象的数据结构
+  ```
+  type Lss struct {
+      name string
+      age int
+      heght float64
+  }
+  ```
+
+* 定义接口
+  
+  ```
+  type Lss interface {
+      Read()
+      Write()
+  }
+  ```
+
+* 类型定义
+  
+  使用类型定义定义出来的类型与原类型不相同，所以不能使用新类型变量赋值给原类型变量
+  ```
+  type lss string
+  根据string类型，定义一种新的类型，新类型名称是lss
+
+  类型定义可以在原类型的基础上创造出新的类型，有些场合下可以使代码更加简洁
+  ```
+
+* 类型别名
+  
+  使用类型别名定义出来的类型与原类型一样，即可以与原类型变量互相赋值，又拥有了原类型的所有方法集
+  ```
+  type lss = string
+  ```
+  类型别名与类型定义不同之处在于，使用类型别名需要在别名和原类型之间加上赋值符号(=); 使用类型别名定义的类型与原类型等价，而使用类型定义出来的类型是一种新的类型
+
+  给类型别名新增方法，会添加到原类型方法集中
+
+* 类型查询
+  
+  类型查询，就是根据变量，查询这个变量的类型。为什么会有这样的需求呢？goalng中有一个特殊的类型interface{}，这个类型可以被任何类型的变量赋值，如果想要知道到底是哪个类型的变量赋值给了interface{}类型变量，就需要使用类型查询来解决这个需求
+  ```
+  func main() {
+      //定义一个 interface{}类型变量
+      var a interface{} = "lss"
+
+      //在switch中使用 变量名.(type) 查询是由哪个类型数据赋值
+      switch v := a.(type) {
+          case string:
+            fmt.Println("字符串")
+          case int:
+            fmt.Println("整型")
+          default:
+            fmt.Println("其他类型")
+      }
+  }
+
+  如果使用.(type)查询类型的变量不是interface{}类型，则在编译时会报错误
+
+  所以，使用type进行类型查询时，只能在switch中使用，且使用类型查询的变量类型必须是interface{}
+  ```
+
+## 10. struct
