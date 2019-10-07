@@ -34,3 +34,85 @@
 通常，一个仓库会包含同一个软件不同版本的镜像，而标签就常用于对应该软件的各个版本。我们可以通过 <仓库名>:<标签> 的格式来指定具体是这个软件哪个版本的镜像。如果不给出标签，将以 latest 作为默认标签
 
 ## 安装 Docker
+Docker 分为 CE 和 EE 两大版本。CE 即社区版（免费，支持周期 7 个月），EE 即企业版，强调安全，付费使用，支持周期 24 个月
+
+#### 使用脚本自动安装
+```
+curl -fsSL get.docker.com -o get-docker.sh
+
+sudo sh get-docker.sh --mirror Aliyun
+
+sudo sh get-docker.sh --mirror AzureChinaCloud
+```
+
+#### 启动 Docker CE
+```
+systemctl enable docker
+systemctl start docker
+```
+
+#### 测试 Docker 是否安装正确
+```
+docker run hello-world
+```
+
+## 使用镜像
+
+#### 获取镜像
+```
+docker pull
+
+docker pull --help 查看帮助文档
+
+docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]
+
+docker pull ubuntu:18.04
+```
+
+#### 运行
+
+有了镜像后，我们就能够以这个镜像为基础启动并运行一个容器。以上面的 ubuntu:18.04 为例，如果我们打算启动里面的 bash 并且进行交互式操作的话
+
+```
+docker run -it --rm ubuntu:18.04 bash
+```
+
+`docker run` 就是运行容器的命令
+
+`-it`：这是两个参数，一个是 -i：交互式操作，一个是 -t 终端。我们这里打算进入 bash 执行一些命令并查看返回结果，因此我们需要交互式终端。
+
+`--rm`：这个参数是说容器退出后随之将其删除。默认情况下，为了排障需求，退出的容器并不会立即删除，除非手动 docker rm。我们这里只是随便执行个命令，看看结果，不需要排障和保留结果，因此使用 --rm 可以避免浪费空间。
+
+`ubuntu:18.04`：这是指用 ubuntu:18.04 镜像为基础来启动容器。
+
+`bash`：放在镜像名后的是 命令，这里我们希望有个交互式 Shell，因此用的是 bash
+
+通过 `exit` 来退出这个容器
+
+
+#### 列出镜像
+
+要想列出已经下载下来的镜像，可以使用：
+```
+docker image ls
+
+docker images
+
+docker image ls -a
+
+docker image ls ubuntu  //根据仓库名列出镜像
+```
+
+#### 删除本地镜像
+```
+docker image rm
+
+docker image rm [选项] <镜像1> [<镜像2> ...]
+```
+
+#### docker commit
+
+`docker commit` 命令除了学习之外，还有一些特殊的应用场合，比如被入侵后保存现场等。但是，不要使用 `docker commit` 定制镜像，定制镜像应该使用 `Dockerfile` 来完成
+
+## 使用 Dockerfile 定制镜像
+
