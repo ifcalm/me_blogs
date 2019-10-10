@@ -110,4 +110,120 @@ print(L2)
 ```
 
 ### tuple(元组)
+tuple 是另一种有序的列表（元组）
 
+tuple 一旦创建完毕，就不能修改了
+
+```
+t = ('Adam', 'Lisa', 'Bart')
+
+此时 t 不能更改
+
+没有删除，插入，更改 的操作
+```
+单元素的 tuple 要多加一个逗号
+```
+t = (1,)
+```
+
+#### 注意
+```
+t = ('a', 'b', ['A', 'B'])
+list 中的值可变
+```
+
+### dict(字典)
+```
+d = {
+    'Adam': 95,
+    'Lisa': 85,
+    'Bart': 59
+}
+
+print(d)
+print(d['Bart'])
+```
+
+#### 判断 key 是否存在
+```
+d = {
+    'Adam': 95,
+    'Lisa': 85,
+    'Bart': 59
+}
+
+if 'Paul' in d:
+    print(d['Paul'])
+
+
+使用 in 操作符判断 key 是否存在
+```
+`in` 操作符
+
+dict 查找速度快，无论 dict 是 10 个元素还是 10 万个元素查找速度都一样，而 list 的查找速度随着元素增加而逐渐下降
+
+dict 占用内存大
+
+dict 是按照 key 查找，所以在一个 dict 中，key 不能重复
+
+dict 是无序的
+
+dict 作为 key 的元素必须不可变
+
+#### 遍历 dict
+由于 dict 是一个集合，可以通过 for 循环实现
+```
+d = {''Adam': 95, 'Lisa': 85, 'Bart': 75}
+
+for key in d:
+    print(key)
+```
+通过 key 可以获取对应的 value
+
+### set(集合)
+dict 的作用是建立一组 key 和 一组 value 的映射关系。
+dict 的key 是不能重复的。
+
+set 的元素没有重复而且是无序的
+
+创建set 的方式是调用 set() 并传入一个 list，list的元素将作为 set 的元素
+
+```
+s = set(['A', 'B', 'C'])
+
+set 内部存储是无序的
+```
+
+因为 set 存储是不能包含重复的元素，所以当传入重复的元素时，set 会自动去重
+
+#### 访问 set
+set 是无序集合，所以我们没法通过索引来访问
+```
+s = set(['A', 'B', 'C'])
+'Bart' in s
+使用 in操作符 判断元素是否在set 中
+```
+
+#### 遍历 set
+set 也是一个集合，可以通过 for 循环实现
+
+```
+s = set(['A', 'B', 'C'])
+for str in s:
+    print(str)
+```
+
+#### 添加 set 元素
+
+```
+s = set(['A', 'B', 'C'])
+s.add('D')
+print(s)
+```
+
+#### 删除 set 元素
+```
+s = set(['A', 'B', 'C'])
+s.remove('A')
+print(s)
+```
