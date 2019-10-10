@@ -1,4 +1,4 @@
-# Python 教程
+# Python 语法教程
 
 ### Python 的数据类型
 * 整型
