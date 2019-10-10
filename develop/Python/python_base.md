@@ -465,3 +465,48 @@ from logging import log as loger  #为导入的函数起别名
 ```
 
 ### 错误和异常处理
+```
+while True:
+    try:
+        x = int(input("Please enter a number:"))
+        break
+    except ValueError:
+        print("Try again...")
+```
+try 语句按如下方式工作。
+
+首先，执行 try 子句 （在 try 和 except 关键字之间的部分）。
+
+如果没有异常发生， except 子句 在 try 语句执行完毕后就被忽略了。
+
+如果在 try 子句执行过程中发生了异常，那么该子句其余的部分就会被忽略。
+
+如果异常匹配于 except 关键字后面指定的异常类型，就执行对应的except子句。然后继续执行 try 语句之后的代码。
+
+如果发生了一个异常，在 except 子句中没有与之匹配的分支，它就会传递到上一级 try 语句中。
+
+如果最终仍找不到对应的处理语句，它就成为一个 未处理异常，终止程序运行，显示提示信息。
+
+一个 try 语句可能包含多个 except 子句，分别指定处理不同的异常。至多只会有一个分支被执行。异常处理程序只会处理对应的 try 子句中发生的异常，在同一个 try 语句中，其他子句中发生的异常则不作处理。一个 except 子句可以在括号中列出多个异常的名字，例如:
+```
+ except (RuntimeError, TypeError, NameError):
+     pass
+```
+
+最后一个 except 子句可以省略异常名称，以作为通配符使用。你需要慎用此法，因为它会轻易隐藏一个实际的程序错误
+```
+import sys
+
+try:
+    f = open('myfile.txt')
+    s = f.readline()
+    i = int(s.strip())
+except OSError as err:
+    print("OS error: {0}".format(err))
+except ValueError:
+    print("Could not convert data to an integer.")
+except:
+    print("Unexpected error:", sys.exc_info()[0])
+    raise
+```
+
