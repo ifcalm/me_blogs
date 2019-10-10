@@ -116,3 +116,32 @@ docker image rm [选项] <镜像1> [<镜像2> ...]
 
 ## 使用 Dockerfile 定制镜像
 
+Dockerfile 是一个文本文件，其内包含了一条条的 指令(Instruction)，每一条指令构建一层，因此每一条指令的内容，就是描述该层应当如何构建
+
+```
+mkdir mynginx
+cd mynginx
+touch Dockerfile
+```
+
+内容为：
+```
+FROM nginx
+RUN echo '<h1>Hello, Docker</h2>' > /usr/share/nginx/html/index.html
+```
+FROM 用于指定基础镜像
+RUN 勇于执行命令
+
+#### 构建镜像
+```
+docker build -t nginx:v3
+```
+
+#### Dockerfile 指令详解
+
+* COPY 复制文件
+  格式：
+  ```
+  
+  ```
+  `COPY` 指令将从构建上下文目录中 <源路径> 的文件/目录复制到新的一层的镜像内的 <目标路径> 位置。比如：
