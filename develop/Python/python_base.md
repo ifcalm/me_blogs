@@ -93,5 +93,21 @@ L.insert(0, 'Lss')
 L[2] = 'Lss'
 ```
 
+完整示例：
+
+```
+L = ['Adam', 'Lisa', 'Bart']
+L.append('Lss')    #添加元素
+L.insert(0, 'Lqq')    #添加元素
+print(L)
+
+L2 = [0,1,2,3,4,5]
+L2.pop()    #删除元素
+print(L2)    #删除元素
+L3 = L2.pop(2)    #返回删除的元素
+print(L3)
+print(L2)
+```
+
 ### tuple(元组)
 
