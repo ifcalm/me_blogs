@@ -227,3 +227,47 @@ s = set(['A', 'B', 'C'])
 s.remove('A')
 print(s)
 ```
+
+### if 语句
+```
+if age >= 18:
+    print('anult')
+elif age >= 6:
+    print('teenager')
+elif age >= 3:
+    print('kid')
+else:
+    print('baby')
+```
+`if` 后接 表达式，用 `:` 表示代码块开始, 在代码书写中要注意缩进, 多个条件判断时用 `if-elif-else`
+
+### for 语句
+for 可以循环任何一个数据集合
+```
+L = ['Adam', 'Lisa', 'Bart']
+for name in L:
+    print(name)
+```
+
+### while 语句
+while 循环不会迭代 集合，而是根据表达式判断循环是否结束
+```
+N = 10
+x = 0
+while x < N :
+    print(x)
+    x = x + 1
+```
+
+### 退出循环
+用 for 循环 或者 while循环时，如果在循环体内直接 退出循环，可以使用 break 语句
+
+continue 可以跳过 后续循环代码，继续下一次循环
+
+### 多重循环
+```
+for x in ['A', 'B', 'C']:
+    for y in ['1', '2', '3']
+        print(x + y)
+```
+
