@@ -241,3 +241,200 @@ Fatal系列函数会在写入日志信息后调用`os.Exit(1)`。
 Panic系列函数会在写入日志信息后panic
 
 ### server 服务
+
+#### 服务端
+监听端口，接收客户端的链接，创建goroutine,处理该链接
+```
+package main
+
+import (
+    "fmt"
+    "net"
+)
+
+func main() {
+    fmt.Println("start server...")
+    listen, err := net.Listen("tcp", "0.0.0.0:50000")
+    if err != nil {
+        fmt.Println("listen failed, err:", err)
+        return
+    }
+    for {
+        conn, err := listen.Accept()
+        if err != nil {
+            fmt.Println("accept failed, err:", err)
+            continue
+        }
+        go process(conn)
+    }
+}
+func process(conn net.Conn) {
+    defer conn.Close()
+    for {
+        buf := make([]byte, 512)
+        n, err := conn.Read(buf)
+        if err != nil {
+            fmt.Println("read err:", err)
+            return
+        }
+
+        fmt.Printf(string(buf[0:n]))
+    }
+}
+```
+
+#### 客户端
+a. 建立与服务端的链接
+b. 进行数据收发
+c. 关闭链接
+
+```
+package main
+
+import (
+    "bufio"
+    "fmt"
+    "net"
+    "os"
+    "strings"
+)
+
+func main() {
+
+    conn, err := net.Dial("tcp", "localhost:50000")
+    if err != nil {
+        fmt.Println("Error dialing", err.Error())
+        return
+    }
+
+    defer conn.Close()
+    inputReader := bufio.NewReader(os.Stdin)
+    for {
+        input, _ := inputReader.ReadString('\n')
+        trimmedInput := strings.Trim(input, "\r\n")
+        if trimmedInput == "Q" {
+            return
+        }
+        _, err = conn.Write([]byte(trimmedInput))
+        if err != nil {
+            return
+        }
+    }
+}
+```
+
+### 时间处理
+#### 格式化
+
+```
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+
+	// 当前时间戳
+	now := time.Now().Unix()
+	fmt.Println(now)
+
+	// 当前格式化时间
+	fmt.Println(time.Now().Format("2006-01-02 15:04:05"))
+	// 这是个奇葩,必须是这个时间点, 据说是go诞生之日, 记忆方法:6-1-2-3-4-5
+
+	// 时间戳转str格式化时间
+	str_time1 := time.Unix(0, 0).Format("2006-01-02 15:04:05")
+	fmt.Println(str_time1)
+	str_time2 := time.Unix(1522393808, 0).Format("2006年01月02日 15时04分05秒")
+	fmt.Println(str_time2)
+	// str_time3 := time.Unix("1522393808",0).Format("2006-01-02 15:04:05")
+	// cannot use "1522393808" (type string) as type int64 in argument to time.Unix
+	str_time4 := time.Unix(1522393808, 0).Format("06-01-02 15:04:05")
+	fmt.Println(str_time4)
+	str_time5 := time.Unix(1522393808, 0).Format("01-02 15:04")
+	fmt.Println(str_time5)
+
+	// str格式化时间转时间戳
+	// 方法一   2018-03-30 15:24:59
+	the_time := time.Date(2018, 3, 30, 15, 24, 59, 0, time.Local)
+	unix_time := the_time.Unix()
+	fmt.Println(unix_time)
+	fmt.Println(time.Unix(unix_time, 0).Format("2006-01-02 15:04:05"))
+	// 方法二 , 使用time.Parse
+	/*
+	   返回的不是本地时间, 而是 UTC , 会自动加8小时.
+	*/
+	the_time, err := time.Parse("2006-01-02 15:04:05", "2018-03-30 15:24:59")
+	if err == nil {
+		unix_time := the_time.Unix()
+		fmt.Println(unix_time)
+		fmt.Println(time.Unix(unix_time, 0).Format("2006-01-02 15:04:05"))
+	}
+	// 使用time.ParseInLocation
+	the_time, err = time.ParseInLocation("2006-01-02 15:04:05", "2018-03-30 15:24:59", time.Local)
+	if err == nil {
+		unix_time := the_time.Unix()
+		fmt.Println(unix_time)
+		fmt.Println(time.Unix(unix_time, 0).Format("2006-01-02 15:04:05"))
+	}
+
+	// 格式化当前时间
+	lasttime := time.Now().Format("2006-01-02 15:04:05")
+	fmt.Println(lasttime)
+
+}
+```
+
+### 锁机制
+
+#### 互斥锁
+golang中sync包实现了两种锁Mutex （互斥锁）和RWMutex（读写锁），其中RWMutex是基于Mutex实现的，只读锁的实现使用类似引用计数器的功能。
+
+1、互斥锁 （用于基本上全是写入操作的应用）
+```
+type Mutex
+	func (m *Mutex) Lock()
+	func (m *Mutex) Unlock()
+```
+
+go mutex是互斥锁，只有Lock和Unlock两个方法，在这两个方法之间的代码不能被多个goroutins同时调用到。
+
+其中Mutex为互斥锁，Lock()加锁，Unlock()解锁，使用Lock()加锁后，便不能再次对其进行加锁，直到利用Unlock()解锁对其解锁后，才能再次加锁．适用于读写不确定场景，即读写次数没有明显的区别，并且只允许只有一个读或者写的场景，所以该锁叶叫做全局锁。
+
+func (m *Mutex) Unlock()用于解锁m，如果在使用Unlock()前未加锁，就会引起一个运行错误．已经锁定的Mutex并不与特定的goroutine相关联，这样可以利用一个goroutine对其加锁，再利用其他goroutine对其解锁。
+
+互斥锁只能锁定一次，当在解锁之前再次进行加锁，便会死锁状态，如果在加锁前解锁，便会报错“panic: sync: unlock of unlocked mutex”
+
+#### 读写锁
+用于读取多，写入少的操作应用
+
+```
+type RWMutex
+
+    func (rw *RWMutex) Lock()
+
+    func (rw *RWMutex) RLock()
+
+    func (rw *RWMutex) RLocker() Locker
+
+    func (rw *RWMutex) RUnlock()
+
+    func (rw *RWMutex) Unlock()
+```
+
+RWMutex是一个读写锁，该锁可以加多个读锁或者一个写锁，其经常用于读次数远远多于写次数的场景．
+
+func (rw *RWMutex) Lock()　　写锁，如果在添加写锁之前已经有其他的读锁和写锁，则lock就会阻塞直到该锁可用，为确保该锁最终可用，已阻塞的 Lock 调用会从获得的锁中排除新的读取器，即写锁权限高于读锁，有写锁时优先进行写锁定
+func (rw *RWMutex) Unlock()　写锁解锁，如果没有进行写锁定，则就会引起一个运行时错误
+
+func (rw *RWMutex) RLock() 读锁，当有写锁时，无法加载读锁，当只有读锁或者没有锁时，可以加载读锁，读锁可以加载多个，所以适用于＂读多写少＂的场景
+
+func (rw *RWMutex)RUnlock()　读锁解锁，RUnlock 撤销单次RLock 调用，它对于其它同时存在的读取器则没有效果。若 rw 并没有为读取而锁定，调用 RUnlock 就会引发一个运行时错误(注：这种说法在go1.3版本中是不对的，例如下面这个例子)。
+
+读写锁的写锁只能锁定一次，解锁前不能多次锁定，读锁可以多次，但读解锁次数最多只能比读锁次数多一次，一般情况下我们不建议读解锁次数多余读锁次数。
+
+读多写少的情况，用读写锁， 携程同时在操作读。
+
+### 原子操作
