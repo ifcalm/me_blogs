@@ -438,3 +438,235 @@ func (rw *RWMutex)RUnlock()　读锁解锁，RUnlock 撤销单次RLock 调用，
 读多写少的情况，用读写锁， 携程同时在操作读。
 
 ### 原子操作
+sync/atomic 库提供了原子操作的支持，原子操作直接有底层CPU硬件支持，因而一般要比基于操作系统API的锁方式效率高些。本文对 sync/atomic 中的基本操作进行一个简单的介绍。
+
+原子增、减值
+用于对变量值进行原子增操作，并返回增加后的值。
+
+第一个参数值必须是一个指针类型的值，以便施加特殊的CPU指令。
+第二个参数值的类型和第一个被操作值的类型总是相同的
+
+```
+package main 
+
+import(
+    "fmt"
+    "sync"
+    "sync/atomic"
+)
+
+func main(){
+    var sum uint32 = 100
+    var wg sync.WaitGroup
+    for i := 0; i < 50; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            atomic.AddUint32(&sum, 1)
+        }()
+    }
+    wg.Wait()
+    fmt.Println(sum)
+}
+```
+
+### 加密解密
+
+#### md5
+```
+import (
+	"crypto/md5"
+)
+```
+
+#### base64
+golang中base64的编码和解码可以用内置库`encoding/base64`
+
+#### sha
+
+#### hmac
+HMAC是密钥相关的哈希运算消息认证码，HMAC运算利用哈希算法，以一个密钥和一个消息为输入，生成一个消息摘要作为输出。
+
+主要用于验证接口签名
+
+### 常用算法
+#### 冒泡排序
+```
+package main
+
+import (
+	"fmt"
+)
+
+var sli = []int{1, 43, 54, 62, 21, 66, 32, 78, 36, 76, 39}
+
+func bubbleSort(sli []int) []int {
+	len := len(sli)
+	//该层循环控制 需要冒泡的轮数
+	for i := 1; i < len; i++ {
+		//该层循环用来控制每轮 冒出一个数 需要比较的次数
+		for j := 0; j < len-1; j++ {
+			if sli[i] < sli[j] {
+				sli[i], sli[j] = sli[j], sli[i]
+			}
+		}
+	}
+	return sli
+}
+
+func main() {
+	res := bubbleSort(sli)
+	fmt.Println(res)
+}
+```
+#### 选择排序
+```
+package main
+
+import (
+	"fmt"
+)
+
+var sli = []int{1, 43, 54, 62, 21, 66, 32, 78, 36, 76, 39}
+
+func selectSort(sli []int) []int {
+	//双重循环完成，外层控制轮数，内层控制比较次数
+	len := len(sli)
+	for i := 0; i < len-1; i++ {
+		//先假设最小的值的位置
+		k := i
+		for j := i + 1; j < len; j++ {
+			//sli[k] 是当前已知的最小值
+			if sli[k] > sli[j] {
+				//比较，发现更小的,记录下最小值的位置；并且在下次比较时采用已知的最小值进行比较。
+				k = j
+			}
+		}
+		//已经确定了当前的最小值的位置，保存到 k 中。如果发现最小值的位置与当前假设的位置 i 不同，则位置互换即可。
+		if k != i {
+			sli[k], sli[i] = sli[i], sli[k]
+		}
+	}
+	return sli
+}
+
+func main() {
+	res := selectSort(sli)
+	fmt.Println(res)
+}
+```
+#### 快速排序
+```
+package main
+
+import (
+	"fmt"
+)
+
+var sli = []int{1, 43, 54, 62, 21, 66, 32, 78, 36, 76, 39}
+
+func quickSort(sli []int) []int {
+	//先判断是否需要继续进行
+	len := len(sli)
+	if len <= 1 {
+		return sli
+	}
+	//选择第一个元素作为基准
+	base_num := sli[0]
+	//遍历除了标尺外的所有元素，按照大小关系放入左右两个切片内
+	//初始化左右两个切片
+	left_sli := []int{}  //小于基准的
+	right_sli := []int{} //大于基准的
+	for i := 1; i < len; i++ {
+		if base_num > sli[i] {
+			//放入左边切片
+			left_sli = append(left_sli, sli[i])
+		} else {
+			//放入右边切片
+			right_sli = append(right_sli, sli[i])
+		}
+	}
+
+	//再分别对左边和右边的切片进行相同的排序处理方式递归调用这个函数
+	left_sli = quickSort(left_sli)
+	right_sli = quickSort(right_sli)
+
+	//合并
+	left_sli = append(left_sli, base_num)
+	return append(left_sli, right_sli...)
+}
+func main() {
+	res := quickSort(sli)
+	fmt.Println(res)
+}
+```
+#### 插入排序
+```
+package main
+
+import (
+	"fmt"
+)
+
+var sli = []int{1, 43, 54, 62, 21, 66, 32, 78, 36, 76, 39}
+
+func insertSort(sli []int) []int {
+	len := len(sli)
+	for i := 0; i < len; i++ {
+		tmp := sli[i]
+		//内层循环控制，比较并插入
+		for j := i - 1; j >= 0; j-- {
+			if tmp < sli[j] {
+				//发现插入的元素要小，交换位置，将后边的元素与前面的元素互换
+				sli[j+1], sli[j] = sli[j], tmp
+			} else {
+				//如果碰到不需要移动的元素，则前面的就不需要再次比较了。
+				break
+			}
+		}
+	}
+	return sli
+}
+
+func main() {
+	res := insertSort(sli)
+	fmt.Println(res)
+}
+```
+
+#### 睡眠排序
+```
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	tab := []int{1, 3, 0, 5}
+
+	ch := make(chan int)
+	for _, value := range tab {
+		go func(val int) {
+			time.Sleep(time.Duration(val) * 10000000)
+			fmt.Println(val)
+			ch <- val
+		}(value)
+	}
+
+	for _ = range tab {
+		<-ch
+	}
+}
+```
+
+### 限流器
+
+### 日志包
+
+### 随机数
+
+### 编码格式转换
+
+
