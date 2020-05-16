@@ -190,3 +190,147 @@ func testA(x *int) {
 输出结果小于 1000
 
 ### 信道死锁案例
+
+#### 案例一
+```
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	x := make(chan string)
+	x <- "hello world"
+	fmt.Println(<-x)
+}
+```
+上面代码报如下错误：
+```
+fatal error: all goroutines are asleep - deadlock!
+```
+上面代码看起来没什么问题，先往信道里存入数据，在从信道中读取数据。使用 make 创建信道时，若不传第二个参数，则定义的是无缓冲信道，在接收者未准备好之前，发送操作是阻塞的。
+
+解决方法：
+- 使接收者代码在发送者之前执行
+- 使用缓存信道，不使用无缓冲信道
+
+若程序要正常执行，需要保证接收者程序在发送数据到信道前就进入阻塞状态，参考如下代码：
+```
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	x := make(chan string)
+	fmt.Println(<-x)
+	x <- "hello world"
+}
+```
+代码执行后，还会报如下错误`fatal error: all goroutines are asleep - deadlock!`,为什么呢？
+因为我们将发送者和接收者写在了同一协程中，虽然保证了接收者代码在发送者之前执行，但由于前面接收者一直等待数据而出于阻塞状态，所以无法执行到后面的发送数据，还是一样造成了死锁。
+
+那么，我们将接收者代码写在另一个协程里，并保证在发送者之前执行：
+```
+package main
+
+func main() {
+	x := make(chan string)
+	go testA(x)
+	x <- "hello world"
+}
+
+func testA(ch chan string) {
+	<-ch
+}
+```
+
+同样的，我们可以使用有缓存信道：
+```
+package main
+
+import "fmt"
+
+func main() {
+	x := make(chan string, 1)
+	x <- "hello world"
+	fmt.Println(<-x)
+}
+```
+
+#### 案例二
+
+每个信道，都有容量，当信道里的数据等于信道容量后，再往信道里发送数据，就会造成阻塞，必须等到有人从信道中消费数据后，程序才会往下进行。
+
+```
+package main
+
+import "fmt"
+
+func main() {
+	x := make(chan string, 1)
+	x <- "hello world"
+	x <- "hello go"
+	fmt.Println(<-x)
+}
+```
+上面代码造成阻塞
+
+如下代码才可正常运行：
+```
+package main
+
+import "fmt"
+
+func main() {
+	x := make(chan string, 1)
+	x <- "hello world"
+	fmt.Println(<-x)
+	x <- "hello go"
+	fmt.Println(<-x)
+}
+
+```
+
+#### 案例三
+
+当程序一直在等待从信道里读取数据，而此时并没有人往信道里写入数据，此时程序就会陷入死循环，造成死锁
+
+```
+package main
+
+import "fmt"
+
+func main() {
+	x := make(chan string, 1)
+	go func() {
+		x <- "hello world"
+		x <- "hello go"
+	}()
+	for data := range x {
+		fmt.Println(data)
+	}
+}
+```
+如上代码执行也会造成死锁，报`fatal error: all goroutines are asleep - deadlock!`, for循环接收两次消息后，再也没有人发送数据，接收者就会处于一个等待永远接收不到数据的情况，陷入死循环，造成死锁。
+
+解决方法: 发送完数据后，手动关闭信道，告诉range信道已经关闭，无需等待
+```
+package main
+
+import "fmt"
+
+func main() {
+	x := make(chan string, 1)
+	go func() {
+		x <- "hello world"
+		x <- "hello go"
+		close(x)
+	}()
+	for data := range x {
+		fmt.Println(data)
+	}
+}
+```
