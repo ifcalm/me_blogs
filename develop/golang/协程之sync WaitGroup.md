@@ -38,7 +38,7 @@ func main() {
 
 waitGroup 由 sync 包提供，只要实例化就能使用
 ```
-var x sync.waitgroup
+var x sync.WaitGroup
 ```
 
 WaitGroup的几个方法：
