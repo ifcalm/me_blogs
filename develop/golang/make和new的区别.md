@@ -36,7 +36,7 @@ func main() {
 ```
 
 ### make
-内建函数 `make` 用来 为 slice, map, chan 类型分配内存和初始化一个对象，make 也只能用在这3中类型上
+内建函数 `make` 用来 为 slice, map, chan 类型分配内存和初始化一个对象，make 也只能用在这3种类型上
 
 ```
 a := make([]int, 2, 4)
