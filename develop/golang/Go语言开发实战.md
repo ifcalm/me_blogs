@@ -320,5 +320,116 @@ func main() {
 
 **注意运算符的优先级**
 
-#### 流程控制
+### 流程控制
+- if
+- if ... else..
+- switch
+- select
+- for
+- break
+- continue
+- goto
+- 循环嵌套
+
+**if变体**
+```
+package main
+
+import "fmt"
+
+func main() {
+	if num := 10; num%2 == 0 {
+		fmt.Println(num)
+	} else {
+		fmt.Println(num)
+	}
+}
+```
+
+### 函数与指针
+
+Go 语言从设计上对函数进行了优化和改进，让函数使用起来更加方便。因为Go语言的函数本身可以作为值进行传递，既支持匿名函数和闭包，又能满足接口
+
+### 函数作为值
+在Go语言中，函数也是一种类型，可以和其他类型，如int32、float等等，一样被保存在变量中
+
+函数作为值的使用步骤：
+-  定义一个函数类型
+-  实现定义的函数类型
+-  作为参数调用
+
+### 匿名函数
+Go语言支持匿名函数，即在需要使用函数时再定义函数。匿名函数没有**函数名**，只有函数体，函数可以作为一种类型被赋值给变量，匿名函数也往往以变量方式被传递
+
+匿名函数经常被用于实现回调函数、闭包等
+```
+//语法格式
+
+func(a, b int) (x, y int) {
+		return a, b
+	}
+```
+
+### 在定义时调用匿名函数
+```
+package main
+
+import "fmt"
+
+func main() {
+	func(data int) {
+		fmt.Println("hello, ", data)
+	}(12345)
+}
+
+```
+
+### 将匿名函数赋值给变量
+```
+package main
+
+import "fmt"
+
+func main() {
+	f := func(data string) {
+		fmt.Println(data)
+	}
+	f("Hello Go !")
+}
+
+```
+
+### 匿名函数作为回调函数
+```
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+func main() {
+	arr := []float64{1, 9, 16, 25, 30}
+	visit(arr, func(v float64) {
+		v = math.Sqrt(v)
+		fmt.Printf("%.2f \n", v)
+	})
+
+	visit(arr, func(v float64) {
+		v = math.Pow(v, 2)
+		fmt.Printf("%.0f \n", v)
+	})
+}
+
+func visit(list []float64, f func(float64)) {
+	for _, value := range list {
+		f(value)
+	}
+}
+```
+
+### 闭包
+闭包是由函数和与其相关的引用环境组合而成的实体。在实现深约束时，需要创建一个能显式表示引用环境的东西，并将它与相关的子程序捆绑在一起，这样捆绑起来的整体被称为闭包。函数 + 引用环境 = 闭包
+
+闭包在运行时可以有多个实例，不同的引用环境和相同的函数组合可以产生不同的实例
 
