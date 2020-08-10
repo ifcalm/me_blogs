@@ -1113,5 +1113,142 @@ Go语言的类型都是隐式实现接口的。任何定义了接口中所有方
 
 #### 接口的定义
 ```
+package main
+
+import "fmt"
+
+type Phone interface {
+	call()
+}
+
+type Android struct {
+}
+
+type Iphone struct {
+}
+
+func (a Android) call() {
+	fmt.Println("我是安卓手机")
+}
+
+func (i Iphone) call() {
+	fmt.Println("我是苹果手机")
+}
+
+func main() {
+	//定义接口类型的变量
+	var phone Phone
+
+	phone = new(Android)
+	fmt.Printf("%T, %v, %p \n", phone, phone, &phone)
+	phone.call()
+	phone = Android{}
+	fmt.Printf("%T, %v, %p \n", phone, phone, &phone)
+	phone.call()
+
+	phone = new(Iphone)
+	fmt.Printf("%T, %v, %p \n", phone, phone, &phone)
+	phone.call()
+	phone = Iphone{}
+	fmt.Printf("%T, %v, %p \n", phone, phone, &phone)
+	phone.call()
+}
+```
+
+输出结果如下所示：
+```
+*main.Android, &{}, 0xc00003e1f0
+我是安卓手机
+main.Android, {}, 0xc00003e1f0
+我是安卓手机
+*main.Iphone, &{}, 0xc00003e1f0
+我是苹果手机
+main.Iphone, {}, 0xc00003e1f0
+我是苹果手机
+```
+
+### duck typing
+
+Go没有`implements`或`extends`关键字，这类编程语言叫作`duck typing`编程语言
+
+duck typing是描述事物的外部行为而非内部结构。“一只鸟走起来像鸭子，游泳像鸭子，叫起来也像鸭子，那么这只鸟就可以被称为鸭子
+
+”扩展后，可以将其理解为：“一只鸟看起来像鸭子，那么它就是鸭子。”duck typing关注的不是对象的类型本身，而是它是如何使用的
+
+Go类型系统采取了折中的办法:
+- 结构体类型T不需要显式地声明它实现了接口I。只要类型T实现了接口I规定的所有方法，它就自动地实现了接口I
+- 将结构体类型的变量显式或者隐式地转换为接口I类型的变量i
 
 ```
+package main
+
+import "fmt"
+
+type ISayHello interface {
+	SayHello() string
+}
+
+type Duck struct {
+	name string
+}
+
+type Person struct {
+	name string
+}
+
+func (d Duck) SayHello() string {
+	return d.name + "ga ga ga"
+}
+
+func (p Person) SayHello() string {
+	return p.name + "Hello"
+}
+
+func main() {
+	//定义实现接口的对象
+	duck := Duck{"Yaya"}
+	person := Person{"Jhon"}
+
+	fmt.Println(duck.SayHello())
+	fmt.Println(person.SayHello())
+
+	fmt.Println("--------")
+
+	//定义接口类型的变量
+	var i ISayHello
+	i = duck
+	fmt.Printf("%T, %v, %p \n", i, i, &i)
+	fmt.Println(i.SayHello())
+
+	i = person
+	fmt.Printf("%T, %v, %p \n", i, i, &i)
+	fmt.Println(i.SayHello())
+}
+```
+
+输出结果为：
+```
+Yayaga ga ga
+JhonHello
+--------
+main.Duck, {Yaya}, 0xc00003e210
+Yayaga ga ga
+main.Person, {Jhon}, 0xc00003e210
+JhonHello
+```
+
+### 多态
+如果有几个相似而不完全相同的对象，有时人们要求在向它们发出同一个消息时，它们的反应各不相同，分别执行不同的操作。这种情况就是多态现象
+
+多态就是事物的多种形态，Go语言中的多态性是在接口的帮助下实现的——定义接口类型，创建实现该接口的结构体对象
+
+### 空接口
+空接口中没有任何方法。任意类型都可以实现该接口。空接口这样定义：`interface{}`，也就是包含0个方法（method）的interface。空接口可表示任意数据类型
+
+空接口常用于以下情形：
+- println的参数就是空接口
+- 定义一个map：key是string，value是任意数据类型
+- 定义一个切片，其中存储任意类型的数据
+
+
+## go 语言的异常处理
