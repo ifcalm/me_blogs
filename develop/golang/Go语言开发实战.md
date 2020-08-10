@@ -1060,5 +1060,58 @@ func funcTest(e Employee) {
 - 假设有一个正方形和一个圆形，可以分别在正方形和圆形上定义一个名为Area的求取面积的方法。
 
 ```
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Rectangle struct {
+	width  float64
+	height float64
+}
+
+type Circle struct {
+	radius float64
+}
+
+func main() {
+	r1 := Rectangle{10, 4}
+	r2 := Rectangle{12, 5}
+	c1 := Circle{1}
+	c2 := Circle{10}
+
+	fmt.Println(r1.Area())
+	fmt.Println(r2.Area())
+	fmt.Println(c1.Area())
+	fmt.Println(c2.Area())
+}
+
+func (r Rectangle) Area() float64 {
+	return r.width * r.height
+}
+
+func (c Circle) Area() float64 {
+	return c.radius * c.radius * math.Pi
+}
+```
+
+若方法的接受者不是指针，实际只是获取了一个拷贝，而不能真正改变接受者中原来的数据
+
+方法是可以继承的，如果匿名字段实现了一个方法，那么包含这个匿名字段的struct也能调用该匿名字段中的方法
+
+## 接口
+在Go语言中，接口是一组方法签名。
+
+接口指定了类型应该具有的方法，类型决定了如何实现这些方法。当某个类型为接口中的所有方法提供了具体的实现细节时，这个类型就被称为实现了该接口。
+
+接口定义了一组方法，如果某个对象实现了该接口的所有方法，则此对象就实现了该接口。
+
+Go语言的类型都是隐式实现接口的。任何定义了接口中所有方法的类型都被称为隐式地实现了该接口。
+
+
+#### 接口的定义
+```
 
 ```
