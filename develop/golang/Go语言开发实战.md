@@ -1252,3 +1252,311 @@ JhonHello
 
 
 ## go 语言的异常处理
+错误是指程序中出现不正常的情况，从而导致程序无法正常运行。假设尝试打开一个文件，文件系统中不存在这个文件。这是一个异常情况，它表示为一个错误
+
+### error 接口
+```
+type error interface {
+	Error() string
+}
+```
+
+error本质上是一个接口类型，其中包含一个Error()方法，错误值可以存储在变量中，通过函数返回。它必须是函数返回的最后一个值
+
+在Go语言中处理错误的方式通常是将返回的错误与nil进行比较。nil值表示没有发生错误，而非nil值表示出现错误。如果不是nil，需打印输出错误
+
+### 创建 error 对象
+结构体只要实现了Error() string这种格式的方法，就代表实现了该错误接口，返回值为错误的具体描述。通常程序会发生可预知的错误，所以Go语言errors包对外提供了可供用户自定义的方法，errors包下的New()函数返回error对象，errors.New()函数创建新的错误
+
+### 自定义错误
+- 定义一个结构体，表示自定义错误的类型
+- 让自定义错误类型实现error接口：Error() string
+- 定义一个返回error的函数。根据程序实际功能而定
+
+```
+//定义结构体，表示自定义错误的类型
+type MyError struct {
+	errMsg string
+}
+
+//实现 Error() 方法
+func (e MyError) Error() string {
+	return fmt.Printf("%s", e.errMsg)
+}
+```
+
+## defer
+在函数中可以添加多个defer语句。如果有很多调用defer，当函数执行到最后时，这些defer语句会按照逆序执行（报错的时候也会执行），最后该函数返回
+
+```
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	defer funcA()
+	funcB()
+	defer funcC()
+	fmt.Println("test over ...")
+}
+
+func funcA() {
+	fmt.Println("A")
+}
+
+func funcB() {
+	fmt.Println("B")
+}
+
+func funcC() {
+	fmt.Println("C")
+}
+```
+
+输出结果为：
+```
+B
+test over ...
+C
+A
+```
+
+延迟函数的参数在执行延迟语句时被执行，而不是在执行实际的函数调用时执行
+
+```
+package main
+
+import "fmt"
+
+func main() {
+	a, b := 5, 6
+	defer testDefer(a, b)
+
+	m, n := 20, 2
+	testDefer(m, n)
+}
+
+func testDefer(x, y int) {
+	fmt.Println(x + y)
+}
+```
+
+输出结果为：
+```
+22
+11
+```
+
+## panic
+panic，让当前的程序进入恐慌，中断程序的执行。panic()是一个内建函数，可以中断原有的控制流程
+
+不应通过调用panic()函数来报告普通的错误，而应该只把它作为报告致命错误的一种方式。当某些不应该发生的场景发生时调用panic()
+
+## recover
+panic异常一旦被引发就会导致程序崩溃。这当然不是程序员愿意看到的，但谁也不能保证程序不会发生任何运行时错误。不过，Go语言为开发者提供了专用于“拦截”运行时panic的内建函数recover()
+
+recover()可以让进入恐慌流程的Goroutine, 恢复过来并重新获得流程控制权。
+
+需要注意的是，recover()让程序恢复，必须在延迟函数中执行。换言之，recover()仅在延迟函数中有效
+
+切记，开发者应该把它作为最后的手段来使用，换言之，开发者的代码中尽量少有或者没有panic异常
+
+
+## I/O 操作
+计算机系统是以文件为单位来对数据进行管理的
+
+### FileInfo 接口
+文件的信息包括文件名、文件大小、修改权限、修改时间等
+
+```
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	//绝对路径
+	path := "C:/Users/T470p/Desktop/coder/jl.txt"
+	fileinfo, err := os.Stat(path)
+	if err != nil {
+		fmt.Println("err:", err.Error())
+	} else {
+		fmt.Printf("数据类型是:%T \n", fileinfo)
+		fmt.Println("文件名:", fileinfo.Name())
+		fmt.Println("是否为目录:", fileinfo.IsDir())
+		fmt.Println("文件大小:", fileinfo.Size())
+		fmt.Println("文件权限:", fileinfo.Mode())
+		fmt.Println("文件最后修改时间:", fileinfo.ModTime())
+	}
+}
+```
+
+输出结果为:
+```
+数据类型是:*os.fileStat
+文件名: jl.txt
+是否为目录: false
+文件大小: 48
+文件权限: -rw-rw-rw-
+文件最后修改时间: 2020-05-10 22:59:41.4594651 +0800 CST
+```
+
+文件的权限打印出来一共10个字符。文件有3种基本权限：r（read，读权限）、w（write，写权限）、x（execute，执行权限）
+
+### 文件路径
+- filepath.IsAbs()  判断是否为绝对路径
+- filepath.Rel()    获取相对路径
+- filepath.Abs()    获取绝对路径
+- path.Join()       拼接路径
+
+
+```
+package main
+
+import (
+	"fmt"
+	"path"
+	"path/filepath"
+)
+
+func main() {
+	//绝对路径
+	path1 := "C:/Users/T470p/Desktop/coder/jl.txt"
+	//相对路径
+	path2 := "./main.exe"
+
+	fmt.Println(filepath.IsAbs(path1))
+	fmt.Println(filepath.IsAbs(path2))
+
+	fmt.Println(filepath.Rel("C:/Users/T470p/Desktop", path1))
+
+	fmt.Println(path.Join(path1, ".."))
+}
+```
+
+### 文件常规操作
+**创建目录:**
+- os.Mkdir()     创建一层目录
+- os.MkdirAll()  创建多层目录
+
+
+```
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	testdir1 := "./test1"
+	//创建目录
+	err := os.Mkdir(testdir1, os.ModePerm)
+	if err != nil {
+		fmt.Println("err:", err.Error())
+	} else {
+		fmt.Printf("%s 目录创建成功! \n", testdir1)
+	}
+
+	testdir2 := "./test2/abc/lss"
+	//创建多级目录
+	err = os.MkdirAll(testdir2, os.ModePerm)
+	if err != nil {
+		fmt.Println("err:", err.Error())
+	} else {
+		fmt.Printf("%s 目录创建成功! \n", testdir2)
+	}
+}
+```
+
+**创建文件:**
+os.Create()创建文件，如果文件存在，会将其覆盖
+
+```
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	filename1 := "./test1/abc.txt"
+
+	//创建文件
+	file1, err := os.Create(filename1)
+	if err != nil {
+		fmt.Println("err:", err.Error())
+	} else {
+		fmt.Printf("%s 创建成功 %v \n", filename1, file1)
+	}
+}
+```
+
+**打开/关闭文件**
+打开文件：让当前的程序和指定的文件建立一个链接
+
+os.Open()函数本质上是在调用os.OpenFile()函数
+
+```
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	filename1 := "./test1/abc.txt"
+
+	//打开文件
+	file1, err := os.Open(filename1)
+	if err != nil {
+		fmt.Println("err:", err.Error())
+	} else {
+		fmt.Printf("%s 打开成功! %v \n", filename1, file1)
+	}
+
+	filename2 := "./test1/abs2.txt"
+	//以读写的方式打开，如果文件不存在就创建
+	file2, err := os.OpenFile(filename2, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		fmt.Println("err:", err.Error())
+	} else {
+		fmt.Printf("%s 打开成功! %v \n", filename2, file2)
+	}
+
+	file1.Close()
+	file2.Close()
+}
+```
+
+**删除文件**
+- os.Remove()  删除已命名的文件或空目录
+- os.RemoveAll()  删除所有的路径和它包含的任何子节点
+
+```
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	filename1 := "./test1"
+
+	//删除文件
+	err := os.RemoveAll(filename1)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("%s 删除成功!", filename1)
+	}
+}
+```
+
