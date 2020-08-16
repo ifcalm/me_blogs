@@ -1560,3 +1560,369 @@ func main() {
 }
 ```
 
+**读取文件**
+- 打开文件 os.Open(fileName)
+- 读取文件 file.Read()
+- 关闭文件 file.Close()
+
+```
+package main
+
+import (
+	"fmt"
+	"io"
+	"os"
+)
+
+func main() {
+	fileName := "./jl.txt"
+
+	//打开文件
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Println("打开文件错误", err.Error())
+	} else {
+		bs := make([]byte, 1024*8, 1024*8)
+		n := -1
+		for {
+			//读取文件
+			n, err = file.Read(bs)
+			if n == 0 || err == io.EOF {
+				fmt.Println("读取文件结束")
+				break
+			}
+			fmt.Println(string(bs[:n]))
+		}
+	}
+	//关闭文件
+	file.Close()
+}
+```
+
+**写入文件**
+1. 打开或创建文件  os.OpenFile()
+2. 写入文件 `file.Write([]byte)-->n, err` , `file.WriteString(string)-->n, err`
+3. 关闭文件 file.Close()
+
+```
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	//打开文件
+	file, err := os.OpenFile("./jl.txt", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	//关闭文件
+	defer file.Close()
+
+	if err != nil {
+		fmt.Println("打开文件异常", err.Error())
+	} else {
+		n, err := file.Write([]byte("test open file"))
+		if err != nil {
+			fmt.Println("写入文件异常", err.Error())
+		} else {
+			fmt.Println("write ok", n)
+		}
+
+		n, err = file.WriteString("奥力给")
+		if err != nil {
+			fmt.Println("写入文件异常", err.Error())
+		} else {
+			fmt.Println("write ok", n)
+		}
+	}
+}
+```
+
+
+**复制文件**
+Go语言提供了copyFile()方法，用来复制文件
+
+
+### ioutil 包
+
+核心函数：
+- ReadFile()
+- WriteFile()
+- ReadDir()
+- TempDir()
+- TempFile()
+
+
+### bufio 包
+
+#### 缓存区原理
+bufio实现了带缓冲的I/O操作，达到高效读写
+
+bufio包对io包下的对象Reader、Writer进行包装，分别实现了io.Reader和io.Writer接口，提供了数据缓冲功能，能够一定程度减少大块数据读写带来的开销，所以bufio比直接读写更快
+
+把文件读取进缓冲区之后，再读取的时候就可以避免文件系统的输出，从而提高速度；在进行写操作时，先把文件写入缓冲区，然后由缓冲区写入文件系统
+
+缓冲区的设计是为了存储多次的写入，最后一口气把缓冲区内容写入文件。当发起一次读写操作时，计算机会首先尝试从缓冲区获取数据；只有当缓冲区没有数据时，才会从数据源获取数据更新缓冲
+
+实际使用中，更推荐使用Scanner对数据进行读取，而非直接使用Reader类。Scanner可以通过splitFunc将输入数据拆分为多个token，然后依次进行读取
+
+后讲解了缓冲区的作用以及如何利用缓冲区对文件进行读写。缓冲区不仅仅用在文件的读写，在网络通信中也起到了很大的作用
+
+## Go 语言网络编程
+
+### HTTP
+超文本传输协议（HTTP）是分布式、协作的、超媒体信息系统的应用层协议。HTTP协议在客户端-服务端架构上工作。HTTP客户端（通常为浏览器）通过URL向Web服务器发送请求。Web服务器根据接收到的请求向客户端发送响应信息。它是一个无状态的请求/响应协议
+
+客户端请求信息和服务器响应信息都会包含请求头和请求体。HTTP请求头提供了关于发送实体的信息，如Content-Type、Content-Length、Date等。在浏览器接收并显示网页前，此网页所在的服务器会返回一个包含HTTP状态码的信息头（server header），用以响应浏览器的请求
+
+HTTP定义了许多与服务器交互的方法，最基本的方法有4种，分别是：GET、POST、PUT、DELETE，对应着对资源的查、改、增、删4种操作。另外还有HEAD方法。HEAD类似GET方法，但只请求页面的首部，不响应页面正文部分，用于获取资源的基本信息，即检查链接的可访问性及资源是否修改
+
+GET和POST的区别：
+- GET在浏览器回退时不会再响应，而POST会再次提交请求
+- GET产生的URL地址可以被添加书签，但是POST不可以
+- GET请求会被浏览器主动缓存，而POST只能手动设置
+- GET请求只能进行URL编码，而POST支持多种编码方式
+- GET请求参数会被保存在浏览器的记录里，但POST中的参数不会被保留
+- GET请求在URL中传送的参数有长度限制，而POST没有
+- 对参数的数据类型，GET只接受ASCII字符，POST没有限制
+- GET比POST更不安全，因为参数直接暴露在URL上，所以GET不能用来传递敏感信息
+- GET参数通过URL传递，POST参数放在Request Body中
+
+
+### HTTPS
+安全超文本传输协议（Secure Hypertext Transfer Protocol，HTTPS）比HTTP更加安全。
+
+HTTPS是基于SSL/TLS的HTTP，HTTP是应用层协议，TLS是传输层协议，在应用层和传输层之间，增加了一个安全套接层SSL。
+
+服务器用RSA生成公钥和私钥，把公钥放在证书里发送给客户端，私钥自己保存。客户端首先向一个权威的服务器求证证书的合法性，如果证书合法，客户端产生一段随机数，这段随机数就作为通信的密钥，称为对称密钥。这段随机数以公钥加密，然后发送到服务器，服务器用密钥解密获取对称密钥，最后，双方以对称密钥进行加密解密通信
+
+### HTPPS的作用
+HTTPS的作用首先是内容加密，建立一个信息安全通道，来保证数据传输的安全；其次是身份认证，确认网站的真实性；最后是保证数据完整性，防止内容被第三方替换或者篡改
+
+HTTPS和HTTP有一定的区别。HTTPS协议需要到CA申请证书。HTTP是超文本传输协议，信息是明文传输；HTTPS则是具有安全性的SSL加密传输协议。HTTP使用的是80端口，而HTTPS使用的是443端口。HTTP的连接很简单，是无状态的；HTTPS协议是由SSL+HTTP协议构建的、可进行加密传输和身份认证的网络协议，比HTTP协议安全
+
+### HTTP协议客户端实现
+Go语言标准库内置了net/http包，涵盖了HTTP客户端和服务端具体的实现方式。内置的net/http包提供了最简洁的HTTP客户端实现方式，无须借助第三方网络通信库，就可以直接使用HTTP中用得最多的GET和POST方式请求数据。
+
+实现HTTP客户端就是客户端通过网络访问向服务端发送请求，服务端发送响应信息，并将相应信息输出到客户端的过程
+
+```
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func main() {
+	//创建一个客户端
+	client := http.Client{}
+
+	//创建一个请求
+	respone, err := client.Get("https://www.baidu.com")
+	if err != nil {
+		fmt.Println("error", err.Error())
+	}
+
+	if respone.StatusCode == 200 {
+		fmt.Println("success")
+		defer respone.Body.Close()
+	}
+	fmt.Println(respone)
+}
+```
+
+### HTTP协议服务端实现
+Go语言标准库内置的net/http包，可以实现HTTP服务端。实现HTTP服务端就是能够启动Web服务，相当于搭建起了一个Web服务器。这样客户端就可以通过网页请求来与服务器端进行交互
+
+启动Web服务的几种方式:
+1. 使用http. FileServer ()方法, http.FileServer()搭建的服务器只提供静态文件的访问。因为这种web服务只支持静态文件访问，所以称之为静态文件服务
+2. 使用http. HandleFunc()方法
+3. 使用http.NewServeMux()方法
+
+
+## Golang 模板
+模板就是在写动态页面时不变的部分，服务端程序渲染可变部分生成动态网页，Go语言提供了html/template包来支持模板渲染。Go提供的html/template包对HTML模板提供了丰富的模板语言，主要用于Web应用程序
+
+#### 模板基本语法
+待补充
+
+## JSON 编码
+JSON（JavaScript Object Notation，JavaScript对象表示法）是一种轻量级的数据交换格式，因简单、可读性强被广泛使用
+
+#### JSON语法规则
+对象是一个无序的`名称/值 对`集合。一个对象以`{`（左大括号）开始，以`}`（右大括号）结束。每个名称后跟一个`:`（冒号）, `名称/值 对`之间使用`,`（逗号）分隔。
+
+数组是值（value）的有序集合。一个数组以`[`（左中括号）开始，以`]`（右中括号）结束。值之间使用“`,`（逗号）分隔
+
+值（value）可以是双引号括起来的字符串（string）、数值（number）、true、false、null、对象（object）或者数组（array）。这些结构可以嵌套
+
+字符串（string）是由双引号括起来的任意数量unicode字符的集合，使用反斜杠转义。一个字符（character）即一个单独的字符串（character string）。JSON的字符串与C或者Java的字符串非常相似
+
+#### JSON的优点
+- 数据格式比较简单，易于读写，格式都是压缩的，占用带宽小
+- 便于客户端的解析，JavaScript可以轻松进行JSON数据的读取
+- 支持当前主流的所有编程语言，便于服务器端的解析
+
+Go的标准包encoding/json对JSON的支持,JSON编码即将Go数据类型转换为JSON字符串
+
+#### map 转 json
+```
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func main() {
+	//定义一个 map 变量并初始化
+	n := map[string][]string{
+		"level":   {"debug"},
+		"message": {"file found", "stack over"},
+	}
+
+	//将 map 解析成 json 格式
+	if data, err := json.Marshal(n); err == nil {
+		fmt.Printf("%s \n", data)
+	}
+}
+```
+
+Marshal()函数返回的JSON字符串是没有空白字符和缩进的，这种紧凑的表示形式是最常用的传输形式，但是不好阅读。如果需要为前端生成便于阅读的格式，可以调用json.MarshalIndent()
+
+```
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func main() {
+	//定义一个 map 变量并初始化
+	n := map[string][]string{
+		"level":   {"debug"},
+		"message": {"file found", "stack over"},
+	}
+
+	//将 map 解析成 json 格式
+	if data, err := json.MarshalIndent(n, "", "    "); err == nil {
+		fmt.Printf("%s \n", data)
+	}
+}
+```
+
+输出结果为：
+```
+{
+    "level": [
+        "debug"
+    ],
+    "message": [
+        "file found",
+        "stack over"
+    ]
+}
+```
+
+#### 结构体转JSON
+
+结构体转换成JSON在开发中经常会用到。json包是通过反射机制来实现编解码的，因此结构体必须导出所转换的字段，没有导出的字段不会被json包解析
+
+```
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type DebugInfo struct {
+	Level  string
+	Msg    string
+	author string //未导出字段不会被json解析
+}
+
+func main() {
+	//定义一个结构体切片并初始化
+	dbgInfs := []DebugInfo{
+		DebugInfo{"debig", "ok", "lss"},
+		DebugInfo{"debug", "ok ok", "lsss"},
+	}
+
+	//将结构体 解析成 json 格式
+	if data, err := json.Marshal(dbgInfs); err == nil {
+		fmt.Printf("%s \n", data)
+	}
+}
+```
+
+`[{"Level":"debig","Msg":"ok"},{"Level":"debug","Msg":"ok ok"}]`
+
+#### 结构体字段标签
+json包在解析结构体时，如果遇到key为JSON的字段标签，则会按照一定规则解析该标签：第一个出现的是字段在JSON串中使用的名字，之后为其他选项。如果整个value为“-”，则不解析该字段
+
+```
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type User struct {
+	Name    string `json:"_name"`
+	Age     int    `json:"_age"`
+	Sex     uint   `json:"-"` //不解析
+	Address string //不改变 key 标签
+}
+
+var user = User{
+	Name:    "Lss",
+	Age:     25,
+	Sex:     1,
+	Address: "深圳",
+}
+
+func main() {
+	arr, _ := json.Marshal(user)
+	fmt.Println(string(arr))
+}
+```
+
+输出结果为：
+`{"_name":"Lss","_age":25,"Address":"深圳"}`
+
+#### 匿名字段
+json包在解析匿名字段时，会将匿名字段的字段当成该结构体的字段处理
+
+```
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type Point struct{ X, Y int }
+type Circle struct {
+	Point
+	Radius int
+}
+
+func main() {
+	//解析匿名字段
+	if data, err := json.Marshal(Circle{Point{50, 50}, 25}); err == nil {
+		fmt.Printf("%s \n", data)
+	}
+}
+```
+
+输出结果为：`{"X":50,"Y":50,"Radius":25}`
+
+- JSON对象只支持string作为key，所以要编码一个map，必须是`map[string]T`这种类型（T是Go语言中的任意类型）
+- channel、complex和function是不能被编码成JSON的
+- 指针在编码的时候会输出指针指向的内容，而空指针会输出nil
+
+#### JSON转切片
