@@ -1926,3 +1926,198 @@ func main() {
 - 指针在编码的时候会输出指针指向的内容，而空指针会输出nil
 
 #### JSON转切片
+
+#### JSON转结构体
+JSON可以转换成结构体。同编码一样，json包是通过反射机制来实现解码的，因此结构体必须导出所转换的字段，不导出的字段不会被json包解析。另外解析时不区分大小写
+
+#### 结构体字段标签
+解码时依然支持结构体字段标签，规则和编码时一样
+
+## Go语言并发编程
+并发指在同一时间内可以执行多个任务
+
+#### 并发和并行
+并发（Concurrency）是同时处理许多个任务，实际上是把任务在不同的时间点交给处理器进行处理，在微观层面，任务不会同时运行
+
+并行（Parallelism）是把每一个任务分配给每一个处理器独立完成，多个任务一定是同时运行。并行就是同时做很多事情
+
+#### 进程和线程
+程序是编译好的二进制文件，在磁盘上，不占用系统资源（CPU、内存、设备）。进程是活跃的程序，占用系统资源，在内存中执行。程序运行起来，产生一个进程。程序就像是剧本，进程就像是演戏，同一个剧本可以在多个舞台同时上演。同样，同一个程序也可以加载为不同的进程（彼此之间互不影响），比如同时运行两个QQ
+
+线程也叫轻量级进程，通常一个进程包含若干个线程。线程可以利用进程所拥有的资源。在引入线程的操作系统中，通常都是把进程作为分配资源的基本单位，而把线程作为独立运行和独立调度的基本单位，比如音乐进程，可以一边查看排行榜一边听音乐，互不影响
+
+进程和线程是操作系统级别的两个基本概念。计算机的核心是CPU，它承担了所有的计算任务，就像一座工厂，时刻在运行。进程就好比工厂的车间，它代表CPU所能处理的单个任务；进程是一个容器。线程就好比车间里的工人。一个进程可以包括多个线程，线程是容器中的工作单位
+
+#### Goroutine
+
+#### 协程
+协程（Coroutine），又称为微线程，是一种比线程更加轻量级的存在。正如一个进程可以拥有多个线程，一个线程也可以拥有多个协程
+
+协程是编译器级的，进程和线程是操作系统级的。协程不被操作系统内核管理，而完全由程序控制，因此没有线程切换的开销。和多线程比，线程数量越多，协程的性能优势就越明显。协程的最大优势在于其轻量级，可以轻松创建上万个而不会导致系统资源衰竭
+
+Go语言中的协程叫作Goroutine。Goroutine由Go程序运行时（runtime）调度和管理，Go程序会智能地将Goroutine中的任务合理地分配给每个CPU。创建Goroutine的成本很小，每个Goroutine的堆栈只有几kb，且堆栈可以根据应用程序的需要增长和收缩
+
+#### 函数创建Goroutine
+在函数或方法前面加上关键字go，将会同时运行一个新的Goroutine
+
+使用go关键字创建Goroutine时，被调用的函数往往没有返回值，如果有返回值也会被忽略。如果需要在Goroutine中返回数据，必须使用channel，通过channel把数据从Goroutine中作为返回值传出
+
+Go程序的执行过程是：创建和启动主Goroutine，初始化操作，执行main()函数，当main()函数结束，主Goroutine随之结束，程序结束
+
+**所有Goroutine在main()函数结束时会一同结束**
+
+#### 匿名函数创建Goroutine
+go关键字后也可以是匿名函数或闭包
+
+```
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	go func() {
+		var times int
+		for {
+			times++
+			fmt.Println("test", times)
+			time.Sleep(time.Second)
+		}
+	}()
+	var input string
+	fmt.Scanln(&input)
+}
+```
+
+#### 启动多个Goroutine
+```
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	go printNum()
+	go printLetter()
+	time.Sleep(3 * time.Second)
+	fmt.Println("main over")
+}
+
+func printNum() {
+	for i := 1; i <= 5; i++ {
+		time.Sleep(300 * time.Millisecond)
+		fmt.Printf("%d", i)
+	}
+}
+
+func printLetter() {
+	for i := 'a'; i <= 'e'; i++ {
+		time.Sleep(500 * time.Millisecond)
+		fmt.Printf("%c", i)
+	}
+}
+```
+
+Go程序运行时，runtime实现了一个小型的任务调度器。此调度器的工作原理类似于操作系统调度线程，Go程序调度器可以高效地将CPU资源分配给每一个任务。在多个Goroutine的情况下，可以使用`runtime.Gosched()`交出控制权。传统逻辑中，开发者需要维护线程池中的线程与CPU核心数量的对应关系，这在Go语言中可以通过`runtime.GOMAXPROCS()`函数做到
+
+
+## channel
+channel即Go的通道，是协程之间的通信机制。一个channel是一条通信管道，它可以让一个协程通过它给另一个协程发送数据。每个channel都需要指定数据类型，即channel可发送数据的类型。如果使用channel发送int类型数据，可以写成chan int。数据发送的方式如同水在管道中的流动
+
+传统的线程之间可以通过共享内存进行数据交互，不同的线程共享内存的同步问题需要使用锁来解决，这样会导致性能低下。Go语言中提倡使用channel的方式代替共享内存。换言之，Go语言主张通过数据传递来实现共享内存，而不是通过共享内存来实现数据传递
+
+#### 创建 channel 类型
+
+channel是引用类型，需要使用make()进行创建
+```
+ch1 := make(chan int)  //创建一个整型 channel
+ch2 := make(chan interface{})  //创建一个空接口类型的channel，可以存放任意数据
+```
+
+#### 使用channel发送数据
+通过channel发送数据需要使用特殊的操作符`<-`
+
+```
+ch1 <- 2
+```
+
+使用channel时要考虑发生死锁（deadlock）的可能。如果Goroutine在一个channel上发送数据，其他的Goroutine应该接收得到数据；如果没有接收，那么程序将在运行时出现死锁。如果Goroutine正在等待从channel接收数据，其他一些Goroutine将会在该channel上写入数据；如果没有写入，程序将会死锁
+
+#### 通过channel接收数据
+channel收发操作在不同的两个Goroutine间进行
+
+```
+data := <-ch1
+
+data, ok := <-ch1  //data 表示接收到的数据。未接收到数据时，data为channel类型的零值。ok（布尔类型）表示是否接收到数据。通过ok值可以判断当前channel是否被关闭
+
+<-ch1  //接收任意数据，忽略接收的数据
+
+```
+
+#### 阻塞
+channel默认是阻塞的。当数据被发送到channel时会发生阻塞，直到有其他Goroutine从该channel中读取数据。当从channel读取数据时，读取也会被阻塞，直到其他Goroutine将数据写入该channel。这些channel的特性帮助Goroutine有效地通信，而不需要使用其他语言中的显式锁或条件变量
+
+```
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var ch1 chan int
+	ch1 = make(chan int)
+	fmt.Printf("%T\n", ch1)
+	ch2 := make(chan bool)
+
+	go func() {
+		data, ok := <-ch1
+		if ok {
+			fmt.Println("goroutine 取到值了", data)
+		}
+		ch2 <- true
+	}()
+	ch1 <- 10
+	<-ch2 //阻塞
+	fmt.Println("main over...")
+}
+```
+
+#### 关闭channel
+发送方如果数据写入完毕，需要关闭channel，用于通知接收方数据传递完毕。通常情况是发送方主动关闭channel。接收方通过多重返回值判断channel是否关闭，如果返回值是false，则表示channel已经被关闭
+
+```
+ch1 := make(chan int)
+ch1 <- 100
+close(ch1)
+```
+
+#### 缓冲channel
+默认创建的都是非缓冲channel，读写都是即时阻塞。缓冲channel自带一块缓冲区，可以暂时存储数据，如果缓冲区满了，就会发生阻塞
+
+```
+ch1 := make(chan string, 6)
+```
+
+#### 单向channel
+channel默认都是双向的，即可读可写。定向channel也叫单向channel，只读，或只写
+
+```
+ch1 := make(<-chan int)  //只读
+ch2 := make(chan<- int)  //只写
+
+```
+
+直接创建单向channel没有任何意义。通常的做法是创建双向channel，然后以单向channel的方式进行函数传递
+
+## select
+select语句的机制有点像switch语句，不同的是，select会随机挑选一个可通信的case来执行，如果所有case都没有数据到达，则执行default，如果没有default语句，select就会阻塞，直到有case接收到数据
+
+## sync 包
+sync包提供了互斥锁
+
