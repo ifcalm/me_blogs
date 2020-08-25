@@ -519,3 +519,118 @@ func main() {
 
 并发编程中最常见的例子就是生产者/消费者模型，该模型主要通过平衡生产线程和消费线程的工作能力来提高程序的整体处理数据的速度。简单地说，就是生产者生产一些数据，然后放到成果队列中，同时消费者从成果队列中来取这些数据。这样就让生产和消费变成了异步的两个过程。当成果队列中没有数据时，消费者就进入饥饿的等待中；而当成果队列中数据已满时，生产者则面临因产品积压导致CPU被剥夺的问题
 
+```
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+//生产者
+func Producer(factor int, out chan<- int) {
+	for i := 0; ; i++ {
+		out <- i * factor
+	}
+}
+
+//消费者
+func Consumer(in <-chan int) {
+	for v := range in {
+		fmt.Println(v)
+	}
+}
+
+func main() {
+	ch := make(chan int, 64)
+	go Producer(3, ch)
+	go Producer(5, ch)
+	go Consumer(ch)
+
+	time.Sleep(5 * time.Second)
+}
+```
+
+我们开启了两个`Producer`生产流水线，分别用于生成3和5的倍数的序列。然后开启一个`Consumer`消费者线程，打印获取的结果。我们通过在`main()`函数休眠一定的时间来让生产者和消费者工作一定时间
+
+我们可以让`main()`函数保存阻塞状态不退出，只有当用户输入`Ctrl+C`时才真正退出程序:
+```
+package main
+
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+)
+
+//生产者
+func Producer(factor int, out chan<- int) {
+	for i := 0; ; i++ {
+		out <- i * factor
+	}
+}
+
+//消费者
+func Consumer(in <-chan int) {
+	for v := range in {
+		fmt.Println(v)
+	}
+}
+
+func main() {
+	ch := make(chan int, 64)
+	go Producer(3, ch)
+	go Producer(5, ch)
+	go Consumer(ch)
+
+	//Ctrl+C 退出
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+	fmt.Printf("quit (%v)\v", <-sig)
+}
+```
+
+这个例子中有两个生产者，并且两个生产者之间无同步事件可参考，它们是并发的。因此，消费者输出的结果序列的顺序是不确定的，这并没有问题，生产者和消费者依然可以相互配合工作
+
+### 发布/订阅模型
+发布/订阅`（publish-subscribe）`模型通常被简写为`pub/sub模型`。在这个模型中，消息生产者成为发布者`（publisher）`，而消息消费者则成为订阅者（subscriber），生产者和消费者是`M :N`的关系。在传统生产者/消费者模型中，是将消息发送到一个队列中，而发布/订阅模型则是将消息发布给一个主题
+
+```
+待补充
+```
+
+### 控制并发数
+有时候我们需要适当地控制并发的程度，因为这样不仅可给其他的应用/任务让出/预留一定的CPU资源，也可以适当降低功耗缓解电池的压力
+
+在Go语言自带的`godoc`程序实现中有一个`vfs`的包对应虚拟的文件系统，在`vfs`包下面有一个`gatefs`的子包，`gatefs`子包的目的就是为了控制访问该虚拟文件系统的最大并发数。`gatefs`包的应用很简单:
+```
+import (
+    "golang.org/x/tools/godoc/vfs"
+    "golang.org/x/tools/godoc/vfs/gatefs"
+)
+
+func main() {
+    fs := gatefs.New(vfs.OS("/path"), make(chan bool, 8))
+    //...
+}
+```
+
+其中`vfs.OS("/path")`基于本地文件系统构造一个虚拟的文件系统，然后`gatefs.New`基于现有的虚拟文件系统构造一个并发受控的虚拟文件系统
+
+通过带缓存通道的发送和接收规则来实现最大并发阻塞:
+```
+var limit = make(chan int, 3)
+
+func main() {
+	for _, w := range work {
+		go func() {
+			limit <- 1
+			w()
+			<-limit
+		}()
+	}
+	select {}
+}
+```
+
