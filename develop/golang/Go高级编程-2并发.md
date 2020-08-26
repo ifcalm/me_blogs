@@ -634,3 +634,156 @@ func main() {
 }
 ```
 
+### 赢者为王
+采用并发编程的动机有很多：并发编程可以简化问题，例如一类问题对应一个处理线程会更简单；并发编程还可以提升性能，在一个多核CPU上开两个线程一般会比开一个线程快一些。其实对提升性能而言，并不是程序运行速度快就表示用户体验好，很多时候程序能快速响应用户请求才是最重要的，当没有用户请求需要处理的时候才合适处理一些低优先级的后台任务
+
+假设我们想快速地搜索`golang`相关的主题，我们可能会同时打开必应、谷歌或百度等多个检索引擎。当某个搜索最先返回结果后，就可以关闭其他搜索页面了。因为受网络环境和搜索引擎算法的影响，某些搜索引擎可能很快返回搜索结果，某些搜索引擎也可能等到他们公司倒闭也没有完成搜索。我们可以采用类似的策略来编写这个程序:
+
+```
+func main() {
+    ch := make(chan string, 32)
+    go func() {
+        ch <- searchByBing("golang")
+    }()
+    go func() {
+        ch <- searchByGoogle("golang")
+    }()
+    go func() {
+        ch <- searchByBaidu("golang")
+    }()
+    fmt.Println(<-ch)
+}
+```
+
+首先，创建了一个带缓存通道，通道的缓存数目要足够大，保证不会因为缓存的容量引起不必要的阻塞。然后开启了多个后台线程，分别向不同的搜索引擎提交搜索请求。当任意一个搜索引擎最先有结果之后，都会马上将结果发到通道中（因为通道带了足够的缓存，这个过程不会阻塞）。但是最终只从通道取第一个结果，也就是最先返回的结果
+
+通过适当开启一些冗余的线程，尝试用不同途径去解决同样的问题，最终以赢者为王的方式提升了程序的相应性能
+
+### 并发的安全退出
+有时候需要通知`Goroutine`停止它正在干的事情，特别是当它工作在错误的方向上的时候。Go语言并没有提供一个直接终止`Goroutine`的方法，因为这样会导致`Goroutine`之间的共享变量处在未定义的状态上。但是如果想要退出两个或者任意多个`Goroutine`怎么办呢
+
+Go语言中不同`Goroutine`之间主要依靠通道进行通信和同步。要同时处理多个通道的发送或接收操作，需要使用`select`关键字,当`select`有多个分支时，会随机选择一个可用的通道分支，如果没有可用的通道分支，则选择`default`分支，否则会一直保持阻塞状态
+
+基于`select`实现的通道的超时判断:
+```
+select {
+    case v := <-in:
+        fmt.Println(v)
+    case <-time.After(time.Second):
+        return
+}
+```
+
+通过`select`的`default`分支实现非阻塞的通道发送或接收操作:
+```
+select {
+    case v := <-in:
+        fmt.Println(v)
+    default:
+    //...
+}
+```
+
+通过`select`来阻止`main()`函数退出:
+```
+func main() {
+    //...
+    select {}
+}
+```
+
+当有多个通道均可操作时，`select`会随机选择一个通道。基于该特性我们可以用`select`实现一个生成随机数序列的程序:
+```
+func main() {
+    ch := make(chan int)
+    go func() {
+        for {
+            select {
+                case ch <- 0:
+                case ch <- 1:
+            }
+        }
+    }()
+    for v := range ch {
+        fmt.Println(v)
+    }
+}
+```
+
+我们通过`select`和`default`分支可以很容易实现一个`Goroutine`的退出控制:
+```
+func worker(channel chan bool) {
+    for {
+        select {
+            default:
+                fmt.Println("hello")
+                //正常工作
+            case <- channel:
+                //退出
+        }
+    }
+}
+
+func main() {
+    channel := make(chan bool)
+    go worker(channel)
+    time.Sleep(time.Second)
+    channel <- true
+}
+```
+
+但是通道的发送操作和接收操作是一一对应的，如果要停止多个`Goroutine`，那么可能需要创建同样数量的通道，这个代价太大了。其实我们可以通过`close()`关闭一个通道来实现广播的效果，所有从关闭通道接收的操作均会收到一个零值和一个可选的失败标志
+
+```
+func worker(channel chan bool) {
+    for {
+        default:
+            fmt.Println("hello")
+            //正常工作
+        case <- channel:
+        //退出
+    }
+}
+
+func main() {
+    channel := make(chan bool)
+    for i := 0; i < 10; i++ {
+        go worker(channel)
+    }
+    time.Sleep(time.Second)
+    close(channel)
+}
+```
+
+我们通过`close()`来关闭`channel`通道，向多个`Goroutine`广播退出的指令。不过这个程序依然不够稳健：当每个`Goroutine`收到退出指令退出时一般会进行一定的清理工作，但是退出的清理工作并不能保证被完成，因为`main`线程并没有等待各个工作`Goroutine`退出工作完成的机制。我们可以结合`sync.WaitGroup`来改进
+
+```
+func worker(wg *sync.WaitGroup, channel chan bool) {
+    defer wg.Done()
+    for {
+        select {
+            default:
+                fmt.Println("hello")
+            case <-channel:
+                return
+        }
+    }
+}
+
+func main() {
+    channel := make(chan bool)
+    var wg sync.WaitGroup
+    for i := 0; i < 10; i++ {
+        wg.Add(1)
+        go worker(&wg, channel)
+    }
+    time.Sleep(time.Second)
+    close(channel)
+    wg.Wait()
+}
+```
+
+现在每个工作者并发体的创建、运行、暂停和退出都是在`main()`函数的安全控制之下了
+
+### context包
+
