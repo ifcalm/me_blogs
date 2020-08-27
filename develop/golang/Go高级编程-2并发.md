@@ -787,3 +787,43 @@ func main() {
 
 ### context包
 
+在`Go 1.7`发布时，标准库增加了一个`context`包，用来简化对于处理单个请求的多个`Goroutine`之间与请求域的数据、超时和退出等操作，官方有博客文章对此做了专门介绍。我们可以用`context`包来重新实现前面的线程安全退出或超时的控制
+
+```
+package main
+
+import (
+	"context"
+	"fmt"
+	"sync"
+	"time"
+)
+
+func worker(ctx context.Context, wg *sync.WaitGroup) error {
+	defer wg.Done()
+	for {
+		select {
+		default:
+			fmt.Println("hello")
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+}
+
+func main() {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go worker(ctx, &wg)
+	}
+	time.Sleep(time.Second)
+	cancel()
+	wg.Wait()
+}
+```
+
+当并发体超时或`main`主动停止工作者`Goroutine`时，每个工作者都可以安全退出
+
+并发是一个非常大的主题，这里只展示几个非常基础的并发编程的例子。官方文档也有很多关于并发编程的讨论，国内也有专门讨论Go语言并发编程的书籍。读者可以根据自己的需求查阅相关的文献
