@@ -1,2 +1,2 @@
-## leetcode 涅槃想法记录
+## leetcode 记录
 
