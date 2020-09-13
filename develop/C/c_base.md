@@ -396,4 +396,68 @@ C语言中运算符中最高等级的为`()`
 
 ### 分支结构之简单if语句
 
+```
+if(results == 100)
+{
+    printf("%s\n", "good");
+}
+```
+
+**if()后面没有分号，直接写{}**
+
+### 分支结构之简单if-else语句
+
+```
+if(results == 100)
+{
+    printf("%s\n", "good ok");
+}
+else
+{
+    printf("%s\n", "no good");
+}
+```
+
+**if()后面没有分号，直接写{}，else后面也没有分号，直接写{}**
+
+### 分支结构之多重if-else语句
+
+```
+if(results == 100)
+{
+    printf("%s\n", "one");
+}
+else if(results >= 70)
+{
+    printf("%s\n", "two");
+}
+else
+{
+    printf("%s\n", "three");
+}
+```
+
+**当某一条件为真的时候，则不会向下执行该分支结构的其他语句**
+
+### 分支结构之嵌套if-else语句
+
+```
+int results = 98;
+int ranking = 2;
+if(results > 90)
+{
+    if(ranking <= 3)
+    {
+        printf("%s\n", "good");
+    }
+    printf("%s\n", "two good");
+}
+else
+{
+    printf("%s\n", "no good");
+}
+```
+
+
+### 循环结构之while循环
 
