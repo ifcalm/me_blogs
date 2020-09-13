@@ -492,3 +492,186 @@ do
 
 
 ### 循环结构之for循环
+
+```
+int i;
+for(i=1; i<=10; i++)
+{
+    printf("%d", i);
+}
+```
+
+**for循环中的分号一定要写**
+
+for循环中的**表达式1、2、3**均可可以缺省，但分号(;)不能缺省
+
+省略**表达式1（循环变量赋初值）**，表示不对循环变量赋初始值:
+```
+int i = 1;
+for( ; i<=10; i++)
+{
+    printf("%s\n", i);
+}
+```
+
+省略**表达式2(循环条件)**，不做其它处理，循环一直执行（死循环）:
+```
+int i;
+for(i=0; ; i++)
+{
+    printf("%d\n", i);
+}
+```
+
+省略**表达式3(循环变量增量)**，不做其他处理，循环一直执行（死循环）:
+```
+int i;
+for(i=0; i<=10; )
+{
+    printf("%d", i);
+}
+```
+
+**死循环可以使用break解决**
+
+
+表达式1和表达式3可以是一个简单表达式也可以是多个表达式以逗号分割:
+```
+int sum, num;
+for(sum=0, num=0; num <= 3; num++, sum++)
+{
+    sum += num;
+    printf("%d, %d\n", num, sum);
+}
+```
+
+表达式2一般是关系表达式或逻辑表达式，但也可是数值表达式或字符表达式，只要其值非零，就执行循环体:
+```
+int sum, num;
+for(sum=0, num=0; num<=3 && sum <=5; num++, sum++)
+{
+    sum += num;
+    printf("%d, %d\n", num, sum);
+}
+```
+
+**各表达式中的变量一定要在for循环之前定义**
+
+```
+//这样是错误的, sum, num 变量一定要在for之前定义
+for(int sum=0, int num=0; num<=3 && sum <= 5; num++, sum++)
+```
+
+### 循环结构之三种循环比较
+
+`while、do-while和for`三种循环在具体的使用场合上是有区别的:
+
+- 在知道循环次数的情况下更适合使用for循环
+- 在不知道循环次数的情况下适合使用while或者do-while循环，如果有可能一次都不循环应考虑使用while循环，如果至少循环一次应考虑使用do-while循环
+
+### 循环结构之多重循环
+
+```
+#include<stdio.h>
+
+int main()
+{
+    int i, j;
+    for(i=1;i<=5;i++)
+    {
+        for(j=1;j<=5;j++)
+        {
+            printf("*");
+        }
+        printf("\n");
+    }
+    return 0;
+}
+```
+
+### 结束语句之break语句
+
+```
+#include<stdio.h>
+
+int main()
+{
+    int i;
+    for(i=1; i<=10; i++)
+    {
+        printf("%d", i);
+        if(i == 5)
+        {
+            printf("stop...\n");
+            break;
+        }
+    }
+    printf("today over...");
+    return 0;
+}
+```
+
+**在没有循环结构的情况下，break不能用在单独的if-else语句中**
+
+**在多层循环中，一个break语句只跳出当前循环**
+
+### 结束语句之continue语句
+
+```
+#include<stdio.h>
+
+int main()
+{
+    int i;
+    for(i=1; i<=10; i++)
+    {
+        printf("%d", i);
+        if(i == 5)
+        {
+            printf("stop...\n");
+            continue;
+        }
+    }
+    printf("today over...");
+    return 0;
+}
+```
+
+**continue语句的作用是结束本次循环开始执行下一次循环**
+
+**break语句与continue语句的区别是：break是跳出当前整个循环，continue结束本次循环开始下一次循环**
+
+
+### 分支结构之switch语句
+
+```
+#include<stdio.h>
+
+int main()
+{
+    int day = 1;
+    switch (day)
+    {
+    case 1:
+        printf("%s\n", "one");
+        break;
+    case 2:
+        printf("%s\n", "two");
+        break;
+    default:
+        printf("%s\n", "default");
+        break;
+    }
+}
+```
+
+- 在case后的各常量表达式的值不能相同，否则会出现错误
+- 在case子句后如果没有break;会一直往后执行一直到遇到break;才会跳出switch语句
+- switch后面的表达式语句只能是整型或者字符类型
+- 在case后，允许有多个语句，可以不用{}括起来
+- 各case和default子句的先后顺序可以变动，而不会影响程序执行结果
+- default子句可以省略不用
+
+
+### goto语句
+
