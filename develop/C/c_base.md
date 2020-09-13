@@ -675,3 +675,28 @@ int main()
 
 ### goto语句
 
+goto语句是一种无条件分支语句
+
+```
+#include<stdio.h>
+
+int main()
+{
+    int sum = 0;
+    int i = 1;
+    LOOP:if(i<=10)   //LOOP就是一个有效标识符
+    {
+        sum += i;
+        i++;
+        goto LOOP;   //转到LOOP所在的位置继续执行
+    }
+    printf("%d\n", sum);
+    return 0;
+}
+```
+
+其中LOOP是一个标识符，该标识符一般用英文大写并遵守标识符命名规则，这个标识符加上一个`:`一起出现在函数内某处，执行goto语句后，程序将跳转到该标号处并执行其后的语句
+
+
+### 自创函数
+
