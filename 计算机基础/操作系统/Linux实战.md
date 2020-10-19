@@ -138,8 +138,37 @@ ep: `mkdir test`
 
 ### 打包压缩和解压缩
 
+`tar` 打包命令, 常用参数有:
+- c 打包
+- x 解包
+- f 指定操作类型为文件
+  
+
+`tar` 将文件打包, 打包后可以进行压缩存储, 压缩命令有:
+- gzip, 经常使用的扩展名是 .tar.gz
+- bzip2, 经常使用的扩展名是 .tar.bz2
+
+---------------------------------
+
+1. 打包
+   
+   `tar cf test1/a.tar test4`, 把 test4 目录打包为一个文件, 命令为a.tar, 参数 `f` 表示打包为文件, 参数 `c` 表示打包
+
+2. 打包并压缩
+   
+   `tar czf test1/a.tar.gz /etc`, 把 目录 /etc 打包并压缩为 a.tar.gz 文件, 参数 `z` 表示压缩为 gzip 格式, 为了便于区分, 我们把只打包的文件后缀命名为 `.tar`, 打包并压缩的文件后缀命名为 `.tar.gz`
+
+   `tar cjf test1/a.tar.bz2 /etc`, 把目录 /etc 打包并压缩为 a.tar.bz2 文件, 参数 `j` 表示压缩为 bzip2 格式
+
+3. 解压
+   
+   `tar xf a.tar -C /root`, 把 a.tar 解包到 /root 目录下, 参数 `x` 为解包操作
+
+   `tar xzf a.tar.gz -C /root`, 解压 .tar.gz 的包（gzip 格式）
+
+   `tar zjf a.tar.bz2 -C /root`, 解压 .tar.bz2 格式的包 (bzip2 格式)
+   
 
 
-
-
+### Vim 编辑器
 
