@@ -340,3 +340,82 @@ uid=1003(user1) gid=1003(group1) groups=1003(group1)
 
 ### su 和 sudo 的区别和使用
 
+- su  切换用户
+  
+  `su - username`
+
+- sudo  使用本用户 以其他用户身份执行命令
+
+  sudo 给普通用户授权，让普通用户可以操作某些高危命令，而不需要获取 root 密码
+
+  `visudo` 设置需要使用 sudo 的用户(组)
+
+
+### 用户和用户组的配置文件
+
+`/etc/passwd` 用户配置文件，共有 7 个字段，如下示例所示:（手动编辑该文件也可以增加一个用户）
+```
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+
+```
+
+第一个字段代表 用户的名称
+
+第二个字段表示 该用户登录是否需要密码
+
+第3个字段和第4个字段 表示 用户的 uid（用户id，用户的唯一标识） 和 gid （表示用户属于哪一个组的）
+
+第五个字段 表示 注释
+
+第六个 字段表示用户的家目录在 哪一个位置
+
+第七个字段表示 用户使用的命令解释器
+
+
+----------------------
+
+`/etc/shadow` 文件保存用户和用户密码相关信息的
+
+```
+root:$6$YLEvGcqbrZBGVx0t$6sa1XhLT.C109G0pNEI2L/9cSmQmEK5Jsp1tHcgUZlZezpnJbUUQqd/xa3a1Q/qCJPCEoFMCFrEt6LMMNJCsU.:18555:0:99999:7:::
+daemon:*:18474:0:99999:7:::
+bin:*:18474:0:99999:7:::
+sys:*:18474:0:99999:7:::
+
+```
+
+第一个字段表示用户名称
+
+第二个字段表示 用户加密过的密码
+
+
+-----------------------
+
+`/etc/group` 用户组相关的文件
+
+```
+root:x:0:
+daemon:x:1:
+bin:x:2:
+sys:x:3:
+adm:x:4:syslog,lss
+tty:x:5:
+```
+
+第一个字段表示 组的名称
+
+第二个字段表示 是否需要密码验证
+
+第三个字段表示 组的 gid
+
+第四个字段 表示 其他组
+
+
+### 文件与目录的权限
+
+
+
+
