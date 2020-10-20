@@ -166,7 +166,7 @@ ep: `mkdir test`
 
    `tar xzf a.tar.gz -C /root`, 解压 .tar.gz 的包（gzip 格式）
 
-   `tar zjf a.tar.bz2 -C /root`, 解压 .tar.bz2 格式的包 (bzip2 格式)
+   `tar xjf a.tar.bz2 -C /root`, 解压 .tar.bz2 格式的包 (bzip2 格式)
    
 
 
