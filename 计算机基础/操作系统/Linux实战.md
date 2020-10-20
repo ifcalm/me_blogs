@@ -265,3 +265,78 @@ vim 软件所在的配置文件 `/etc/vimrc` , 相当于修改软件的配置，
 
 ### 用户与用户组管理
 
+Linux 是个多用户操作系统
+
+需要对用户进行管理，以及对用户所属的文件进行管理
+
+--------------------
+
+#### 用户管理常用命令
+
+- `useradd`  新建用户
+- `userdel`  删除用户
+- `passwd`   修改用户密码
+- `usermod`  修改用户属性
+- `chage`    修改用户属性
+
+
+`useradd test_user_1`, 添加一个 `test_user_1` 的用户
+
+`id root`, `id test_user_1`, 使用 `id` 命令查看系统中是否有该用户
+
+创建用户的时候会为用户创建一个家目录, 具体目录为 `/home/test_user_1`, 目录名与用户名相同
+
+创建用户的时候还会在 `/etc/passwd` 文件中添加一行相关信息 `test_user_1:x:1001:1001::/home/test_user_1:/bin/sh`
+
+创建用户的时候还会在 `/etc/shadow` 文件下添加一条相关信息 `test_user_1:!:18555:0:99999:7:::`, 这个是密码相关的文件
+
+**在创建用户的时候，若不指定组，会默认创建与用户名同名的一个组，并把该用户纳入该组**  `uid=1001(test_user_1) gid=1001(test_user_1) groups=1001(test_user_1)`
+
+
+`passwd test_user_1` 为用户 `test_user_1` 设置密码
+
+若要修改当前用户的密码, 直接使用 `passwd`
+
+`userdel test_user_1`, 删除一个用户, 但会保留用户的家目录
+
+`userdel -r test_user_1`, 连同用户的家目录一块删除
+
+
+`useradd w`, `usermod -d /home/wl w`, 修改用户的家目录为 `/home/wl`
+
+`chage` 用与设置用户的生命周期, （设置密码过期时间，用户失效时间等）
+
+-------------------
+
+#### 组管理命令
+
+- groupadd  新建用户组
+- groupdel  删除用户组
+
+
+```
+groupadd group1  //新建用户组
+useradd user1    //新建用户
+usermod -g group1 user1  //将用户 user1 的组修改为 group1
+
+-----------------------
+
+root@ifcalm:~# groupadd group1
+root@ifcalm:~# useradd user1
+root@ifcalm:~# usermod -g group1 user1
+root@ifcalm:~# id user1
+uid=1003(user1) gid=1003(group1) groups=1003(group1)
+
+```
+
+`useradd -g group1 user2`, 新建的用户 user2 直接加入 group1 组
+
+
+### 切换用户的两种方法
+
+1. `su user1`, 不完全切换
+2. `su - user1`, 完全切换
+
+
+### su 和 sudo 的区别和使用
+
