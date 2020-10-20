@@ -416,6 +416,9 @@ tty:x:5:
 
 ### 文件与目录的权限
 
+![](./img/filequanxian.PNG)
+
+
 
 
 
