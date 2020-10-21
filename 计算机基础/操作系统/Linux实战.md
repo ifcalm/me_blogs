@@ -622,5 +622,31 @@ _gateway        0.0.0.0         255.255.255.255 UH    100    0        0 ens33
 
 ### 修改网络配置
 
+设置网卡 ip 地址: 
 
+`ifconfig eth0 192.168.0.3 netmask 255.255.255.0`
+
+`ifconfig <接口> <ip地址> [netmask 子网掩码]`
+
+
+网卡启用: `ifup eth0`
+
+网卡禁用: `ifdown eth0`
+
+
+#### 网关配置命令
+
+添加网关:
+- route add default gw <网关ip>
+- route add -host <指定ip> gw <网关ip>  //为某个ip指定网关
+- route add -net <指定网段> netmask <子网掩码> gw <网关ip>   //为某个网段指定网关
+
+删除网关：
+- route del default gw <网关ip>
+
+
+![](./img/ipset.PNG)
+
+
+### 网络故障排除命令
 
