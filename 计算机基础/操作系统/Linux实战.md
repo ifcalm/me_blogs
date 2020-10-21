@@ -520,4 +520,107 @@ chmod 446 a.txt   //通过数字设置权限
 
 ### 网络管理
 
+- 网络状态查看
+- 网络配置
+- 路由命令
+- 网络故障排除
+- 网络服务管理
+- 常用配置文件
+
+
+### 网络状态查看工具
+
+1. net-tools 工具集
+   
+   `ifconfig`
+
+   `route`
+
+   `netstat`
+
+2. iproute2 工具集
+
+   `ip`
+
+   `ss`
+
+![](./img/ip.PNG)
+
+### 网络接口命名修改
+
+网卡命名规则受 `biosdevname` 和 `net.ifnames` 两个参数影响, 编辑 `/etc/default/grub` 文件, 增加 `biosdevname=0` 和 `net.ifnames=0`, 然后更新 grub, `grub2-mkconfig -o /boot/grub2/grubcfg`, 然后重启 `reboot`
+
+![](./img/eth0.PNG)
+
+
+### 查看网络配置
+
+以下是网卡信息示例:
+
+```
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:0e:0d:b9:ad  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.180.140  netmask 255.255.255.0  broadcast 192.168.180.255
+        inet6 fe80::20c:29ff:fe99:a4d9  prefixlen 64  scopeid 0x20<link>
+        ether 00:0c:29:99:a4:d9  txqueuelen 1000  (Ethernet)
+        RX packets 62619  bytes 81103112 (81.1 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 17560  bytes 1156166 (1.1 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 255  bytes 21120 (21.1 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 255  bytes 21120 (21.1 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+```
+
+#### 查看网卡物理连接情况（网线是否插好）:
+
+`mii-tool eth0`
+
+`mii-tool ens33`
+
+```
+root@ifcalm:~# mii-tool ens33
+ens33: negotiated 1000baseT-FD flow-control, link ok
+```
+
+#### 查看网关命令
+
+`route`
+
+`route -n`, 使用 `-n` 参数不解析主机名
+
+```
+root@ifcalm:~# route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.180.2   0.0.0.0         UG    100    0        0 ens33
+172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
+192.168.180.0   0.0.0.0         255.255.255.0   U     0      0        0 ens33
+192.168.180.2   0.0.0.0         255.255.255.255 UH    100    0        0 ens33
+root@ifcalm:~# route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         _gateway        0.0.0.0         UG    100    0        0 ens33
+172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
+192.168.180.0   0.0.0.0         255.255.255.0   U     0      0        0 ens33
+_gateway        0.0.0.0         255.255.255.255 UH    100    0        0 ens33
+```
+
+### 修改网络配置
+
+
 
