@@ -650,3 +650,52 @@ _gateway        0.0.0.0         255.255.255.255 UH    100    0        0 ens33
 
 ### 网络故障排除命令
 
+1. ping
+2. traceroute
+3. mtr
+4. nslookup
+5. telnet
+6. tcpdump
+7. netstat
+8. ss
+
+
+#### 检测主机：
+
+`ping` 检测当前主机和目标主机是否畅通
+
+`traceroute`, `mtr` 检测当前主机到目标主机的状况，辅助 `ping` 命令来使用
+
+`traceroute` 路由追踪，查看当前主机到目标主机的每一跳路由，`traceroute -w 1 qq.com`
+
+`mtr` 查看当前主机到目标主机之间是否有数据包丢失, 显示数据更详细
+
+`nslookup` 命令来通过域名来查看 ip, `nslookup qq.com`
+
+#### 检测端口：
+
+`telnet` 检测端口的连接状态, `telnet qq.com 80` : 检测该域名的 80 端口是否开放
+
+#### 检测数据包：
+
+`tcpdump` 命令 分析数据包
+
+`tcpdump -i any -n port 80` 检测所有网卡的80端口的数据包
+
+`tcpdump -i any -n host 192.168.0.3` 捕获指定主机的数据包
+
+`tcpdump -i any -n host 192.168.0.3 and port 80` 同时指定主机和端口
+
+
+#### 检测监听范围：
+
+`netstat`, `ss` 查看监听服务范围
+
+`netstat -ntpl`
+
+`ss -ntpl`
+
+
+### 网络服务管理
+
+
