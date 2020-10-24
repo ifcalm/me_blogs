@@ -698,4 +698,25 @@ _gateway        0.0.0.0         255.255.255.255 UH    100    0        0 ens33
 
 ### 网络服务管理
 
+网络服务管理程序分为两种:
+- SysV
+- systemd
+
+```
+service network start|stop|restart
+chkconfig -list network
+
+systemctl list-unit-files NetworkManager.service
+systemctl start|stop|restart NetworkManager
+systemctl enable|disable NetworkManager
+```
+
+管理服务的工具是 `service` 和 `systemctl`
+
+
+网络配置文件:
+
+- /etc/hosts
+- ifcfg-eth0  //网卡 eth0 的配置文件
+
 
