@@ -928,5 +928,78 @@ MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   1461.3 avail Mem
 
 ```
 
+`ps -ef | grep tail` 查看只包含 tail 关键字的进程
+
+
 ### 进程的控制和进程之间的关系
+
+进程的优先级调整：
+- `nice`, 范围从 -20 到 19，值越小优先级越高，抢占资源就越多
+- `renice` 重新设置优先级
+
+进程的作业控制：
+- `jobs`
+- `&` 
+
+`top -p 10841` 查看进程 `10841` 的运行状况
+
+`nice -n 10 ./a.sh` 把程序 a.sh 的进程优先级调整为 10
+
+
+`./a.sh &`, 让程序在后台运行
+
+如何把程序调回前台：
+1. 执行 `jobs` 命令
+2. `fg 1` 即可把 为 1 的后台程序调回前台
+
+（`fg` 前台，`bg` 后台）
+
+
+### 进程间通信
+
+信号是进程间通信方式的一种
+- 信号机制
+- 管道
+
+ep：终端用户输入中断命令，通过信号机制停止一个程序的运行
+
+`kill -l` 查看所有信号
+
+
+### 守护进程
+
+使用 `nohup` 和 `&` 配合运行一个命令
+
+`nohup` 命令
+
+守护进行与一般进程有什么差别？
+
+### screen 命令和系统日志
+
+`screen` 工具
+
+### 服务管理工具 systemctl
+
+服务管理工具：
+- service
+- systemctl
+
+`systemctl` 是 `service` 的强化版工具
+
+`init` 命令
+
+systemctl 常见操作:
+
+`systemctl status|start|stop|restart|reload|enable|disable 服务名称`
+
+
+### SELinux 简介
+安全增强式Linux（SELinux，Security-Enhanced Linux）是一个Linux内核的安全模块，其提供了访问控制安全策略机制，包括了强制访问控制（Mandatory Access Control，MAC）
+
+查看 SELinux 的命令: `getenforce`
+
+关闭 SELinux: `setenforce 0`
+
+
+### 内存与磁盘管理
 
