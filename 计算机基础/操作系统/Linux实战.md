@@ -720,3 +720,75 @@ systemctl enable|disable NetworkManager
 - ifcfg-eth0  //网卡 eth0 的配置文件
 
 
+*网卡文件位置*
+
+查看主机名: `hostname`
+
+修改主机名: `hostname ifcalmtest`
+
+
+### 软件包管理
+
+软件包管理器，是方便软件安装，卸载，解决软件依赖关系的重要工具
+
+1. CentOS, RedHat 使用 `yum` 包管理器，软件安装包格式为 rpm
+2. Debian, Ubuntu 使用 `apt` 包管理器，软件安装包格式为 deb
+
+
+![](./img/rpm.PNG)
+
+rpm常用命令参数:
+- -q, 查询软件保
+- -i, 安装软件包
+- -e, 卸载软件包
+
+
+`mount` 设备挂载命令
+
+
+#### yum 命令常用选项
+
+#### apt 命令常用选项
+
+`apt list`
+
+`apt install`
+
+`apt update`
+
+
+### 通过源代码编译安装软件包
+
+1. 二进制安装
+2. 源代码编译安装
+
+
+源代码编译安装:
+1. `wget https://openresty.org/download/openresty-1.17.8.2.tar.gz`, 下载源代码
+2. `tar zxf openresty-1.17.8.2.tar.gz`, 解压
+3. `cd openresty-1.17.8.2`, 进入解压后的目录
+4. `./configure --prefix=/usr/local/openresty`, 配置相关参数，指定安装目录(--prefix)
+5. `make`, 编译
+6. `make install`, 编译好之后安装
+
+
+### 如何进行内核升级
+
+`uname -r`, 查看内核版本
+
+**依赖问题**
+
+
+查看 cpu: `lscpu`
+
+### grub 配置文件
+
+`etc/default/grub`
+
+`/etc/grub.d`
+
+`/boot/grub2/grub.cfg`
+
+
+### 使用 ps 和 top 命令查看进程
+
