@@ -792,3 +792,141 @@ rpm常用命令参数:
 
 ### 使用 ps 和 top 命令查看进程
 
+进程管理：
+- 进程的概念与进程查看
+- 进程的控制命令
+- 进程的通信方式----信号
+- 守护进程和系统日志
+- 服务管理工具, `systemctl`
+- SELinux 简介
+
+
+#### 进程的概念
+
+进程就是运行中的程序，从程序开始运行到终止的整个生命周期是可管理的
+
+#### 进程的查看命令
+
+- `ps`, p代表进程, s代表状态
+- `pstree`, 查看进程的树形结构
+- `top`
+
+进程也是树形结构
+
+进程和权限有着密不可分的关系
+
+```
+root@ifcalm:~# ps
+    PID TTY          TIME CMD
+   1577 pts/0    00:00:00 su
+   1581 pts/0    00:00:00 bash
+  10036 pts/0    00:00:00 ps
+
+`PID` 进程的唯一标识
+
+单独执行 `ps` 的时候，查看的是当前终端可以看到的进程
+
+`ps -e` 查看不同终端的所有进程
+
+root@ifcalm:~# ps -e
+    PID TTY          TIME CMD
+      1 ?        00:00:04 systemd
+      2 ?        00:00:00 kthreadd
+      3 ?        00:00:00 rcu_gp
+      4 ?        00:00:00 rcu_par_gp
+      6 ?        00:00:00 kworker/0:0H-kblockd
+      7 ?        00:00:01 kworker/0:1-mm_percpu_wq
+      9 ?        00:00:00 mm_percpu_wq
+     10 ?        00:00:00 ksoftirqd/0
+     11 ?        00:00:07 rcu_sched
+     12 ?        00:00:00 migration/0
+     13 ?        00:00:00 idle_inject/0
+     14 ?        00:00:00 cpuhp/0
+     15 ?        00:00:00 cpuhp/1
+     16 ?        00:00:00 idle_inject/1
+     17 ?        00:00:00 migration/1
+     18 ?        00:00:00 ksoftirqd/1
+     20 ?        00:00:00 kworker/1:0H-kblockd
+
+
+常用ps命令:
+ps -e
+ps -ef, 可以查看进程属于哪个用户的(uid), 父进程(pid)
+ps -eLf, 可以查看线程
+```
+
+```
+root@ifcalm:~# pstree
+systemd─┬─VGAuthService
+        ├─accounts-daemon───2*[{accounts-daemon}]
+        ├─atd
+        ├─cron
+        ├─dbus-daemon
+        ├─dockerd─┬─containerd───10*[{containerd}]
+        │         └─11*[{dockerd}]
+        ├─irqbalance───{irqbalance}
+        ├─login───bash
+        ├─multipathd───6*[{multipathd}]
+        ├─networkd-dispat
+        ├─polkitd───2*[{polkitd}]
+        ├─redis-server───3*[{redis-server}]
+        ├─rsyslogd───3*[{rsyslogd}]
+        ├─snapd───12*[{snapd}]
+        ├─sshd─┬─sshd───sshd───bash───su───bash───pstree
+        │      └─sshd───sshd───bash───su───bash
+        ├─2*[systemd───(sd-pam)]
+        ├─systemd-journal
+        ├─systemd-logind
+        ├─systemd-network
+        ├─systemd-resolve
+        ├─systemd-timesyn───{systemd-timesyn}
+        ├─systemd-udevd
+        ├─unattended-upgr───{unattended-upgr}
+        └─vmtoolsd───2*[{vmtoolsd}]
+
+```
+
+```
+Tasks: 217 total,   2 running, 215 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.2 us,  0.3 sy,  0.0 ni, 99.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   1959.9 total,    647.0 free,    320.3 used,    992.7 buff/cache
+MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   1461.3 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND       
+    469 root      19  -1   73340  25780  24644 S   0.3   1.3   0:03.64 systemd-journ+
+    739 root       0 -20  161148   7160   6036 S   0.3   0.4   0:11.38 vmtoolsd      
+    893 redis     20   0   50188   4768   3460 S   0.3   0.2   0:18.87 redis-server  
+  10346 root      20   0    9360   3952   3160 R   0.3   0.2   0:00.11 top           
+      1 root      20   0  102028  11568   8456 S   0.0   0.6   0:04.11 systemd       
+      2 root      20   0       0      0      0 S   0.0   0.0   0:00.02 kthreadd      
+      3 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 rcu_gp        
+      4 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 rcu_par_gp    
+      6 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/0:0H-+
+      7 root      20   0       0      0      0 I   0.0   0.0   0:01.18 kworker/0:1-m+
+      9 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 mm_percpu_wq  
+     10 root      20   0       0      0      0 S   0.0   0.0   0:00.16 ksoftirqd/0   
+     11 root      20   0       0      0      0 R   0.0   0.0   0:07.76 rcu_sched     
+     12 root      rt   0       0      0      0 S   0.0   0.0   0:00.04 migration/0   
+     13 root     -51   0       0      0      0 S   0.0   0.0   0:00.00 idle_inject/0 
+     14 root      20   0       0      0      0 S   0.0   0.0   0:00.00 cpuhp/0       
+     15 root      20   0       0      0      0 S   0.0   0.0   0:00.00 cpuhp/1       
+     16 root     -51   0       0      0      0 S   0.0   0.0   0:00.00 idle_inject/1 
+     17 root      rt   0       0      0      0 S   0.0   0.0   0:00.34 migration/1   
+     18 root      20   0       0      0      0 S   0.0   0.0   0:00.20 ksoftirqd/1   
+     20 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/1:0H-+
+     21 root      20   0       0      0      0 S   0.0   0.0   0:00.00 kdevtmpfs     
+     22 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 netns         
+     23 root      20   0       0      0      0 S   0.0   0.0   0:00.00 rcu_tasks_kth+
+     24 root      20   0       0      0      0 S   0.0   0.0   0:00.00 kauditd       
+     26 root      20   0       0      0      0 S   0.0   0.0   0:00.01 khungtaskd    
+     27 root      20   0       0      0      0 S   0.0   0.0   0:00.00 oom_reaper    
+     28 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 writeback     
+     29 root      20   0       0      0      0 S   0.0   0.0   0:00.00 kcompactd0    
+     30 root      25   5       0      0      0 S   0.0   0.0   0:00.00 ksmd          
+     31 root      39  19       0      0      0 S   0.0   0.0   0:00.00 khugepaged    
+     78 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kintegrityd   
+
+```
+
+### 进程的控制和进程之间的关系
+
