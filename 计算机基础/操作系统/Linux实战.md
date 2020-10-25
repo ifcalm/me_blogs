@@ -1129,3 +1129,5 @@ root@ifcalm:~# cat /etc/shells
 
 CentOS, Ununtu 默认使用的是 bash
 
+### Linux 的启动过程
+
