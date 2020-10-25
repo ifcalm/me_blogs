@@ -1108,4 +1108,24 @@ linux 支持多种文件系统:
 
 ## Shell 编程
 
+### 什么是 shell
+
+shell 是命令解释器, 用于解释用户对操作系统的操作
+
+shell 有很多:
+```
+root@ifcalm:~# cat /etc/shells 
+# /etc/shells: valid login shells
+/bin/sh
+/bin/bash
+/usr/bin/bash
+/bin/rbash
+/usr/bin/rbash
+/bin/dash
+/usr/bin/dash
+/usr/bin/tmux
+/usr/bin/screen
+```
+
+CentOS, Ununtu 默认使用的是 bash
 
