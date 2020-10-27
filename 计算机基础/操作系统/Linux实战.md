@@ -1131,3 +1131,72 @@ CentOS, Ununtu 默认使用的是 bash
 
 ### Linux 的启动过程
 
+BIOS --- MBR --- BootLoader(grub) --- kernel --- 系统初始化 --- shell
+
+### shell 脚本的格式
+
+shell 脚本是把很多 linux 命令组合到一起
+
+新建 shell 文件 test.sh :
+```
+#! /bin/bash   //告诉系统使用 bash 来解释执行命令
+
+# 注释
+
+cd /etc
+ls
+pwd
+```
+
+执行shell 文件: `bash test.sh`
+
+### 标准 shell 脚本要包含哪些元素
+1. #! /bin/bash
+2. `#` 开头的为注释
+3. `chmod u+x filename` 赋予脚本执行权限
+4. 要执行的 linux 命令
+5. 执行脚本
+   `bash filename.sh`  在当前进程的子进程执行脚本，执行完成之后回到当前进程的状态
+
+   `./filename.sh`
+
+   `source ./filename.sh`  在当前进程运行脚本，会保留脚本的运行状态
+
+   `. filename.sh`
+
+
+内建命令不需要创建子进程，内建命令对当前 shell 生效
+
+
+### 管道
+
+- 管道和信号一样，也是进程通信的方式之一
+- 匿名管道（管道符）是 shell 编程经常用到的通信工具
+- 管道符 `|`, 将前一个命令执行的结果传递给后面的命令
+
+```
+ps | cat
+echo 123 | ps
+```
+
+### 重定向
+
+1. 一个进程默认会打开 标准输入，标准输出，错误输出 三个文件描述符
+2. 输入重定向符号 `<`
+3. 输出重定向符号 `>`, `>>`, `2>`, `&>`
+
+
+```
+wc -l < /etc/passwd  //把用户的密码信息输入终端，并使用 wc 命令统计行数
+
+echo testTxt > a.txt  //把 testTxt 输出到 a.txt 文件，会替换掉文件的原有的内容
+
+echo 1234 >> a.txt  //追加 1234 到文件 a.txt
+
+nocmd 2> b.txt   //把错误信息输出到 b.txt 文件 （错误重定向）
+
+nocmd &> c.txt   //无论命令是否执行对错，都把信息输出到 c.txt
+```
+
+### 变量赋值
+
