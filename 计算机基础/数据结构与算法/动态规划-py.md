@@ -263,3 +263,28 @@ if __name__ == "__main__":
     print("{}排列方式".format(total))
 ```
 
+#### 整数拆分
+
+一个正整数可以写成一些正整数的和，4可以用5种方法写成和式：`4, 3+1, 2+2, 2+1+1, 1+1+1+1`。因此 `p(4)=5`
+
+**代码实现:**
+
+```
+num = 7
+datas = []
+
+def search(rest):
+    if rest <= 0:
+        print(datas)
+    else:
+        for i in range(1, rest+1):
+            # 设置现场
+            datas.append(i)
+            # 递归
+            search(rest-i)
+            # 恢复现场
+            datas.pop()
+
+search(num)
+```
+
