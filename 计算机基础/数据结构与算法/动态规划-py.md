@@ -151,5 +151,115 @@ if __name__ == "__main__":
 - 在尝试了所有可能的分步方法后宣告该问题没有答案
 
 
+**回溯法就是尝试所以的可能**, 适合求解 `枚举问题的所有可能的答案` 的问题
+
+
 #### 八皇后问题
+
+八皇后问题是一个以国际象棋为背景的问题：如何能够在8×8的国际象棋棋盘上放置八个皇后，使得任何一个皇后都无法直接吃掉其他的皇后？为了达到此目的，任两个皇后都不能处于同一条横行、纵行或斜线上
+
+**代码实现:**
+
+```
+board = [
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0]
+]
+
+total = 0
+
+# 判断(x ,y) 位置能否放置皇后
+def can_plane(x, y):
+    # 判断 x 行是否有皇后
+    for i in range(0, y):
+        if board[x][i] == 1:
+            return False
+    # 判断 y 列是否有皇后
+    for i in range(0, x):
+        if board[i][y] == 1:
+            return False
+    # 判断斜线上是否有皇后
+    for i in range(0, x):
+        if x+y-i <= 7:
+            if board[i][x+y-i] == 1:
+                return False
+    # 判断反斜线上是否有皇后
+    for index, i in enumerate(range(x-1, -1, -1)):
+        s_y = y-(index+1)
+        if s_y >= 0:
+            if board[i][s_y] == 1:
+                return False
+
+    return True
+
+def put_queen(step):
+    if step == 8:
+        print_board()
+        global total
+        total += 1
+
+        print("-------------")
+    else:
+        for i in range(8):
+            # 判断该位置能否放置皇后
+            if can_plane(step, i):
+                # 设置现场
+                board[step][i] = 1
+                # 开始递归
+                put_queen(step+1)
+                # 恢复现场
+                board[step][i] = 0
+
+# 打印棋盘
+def print_board():
+    for i in range(8):
+        for j in range(8):
+            if board[i][j] == 0:
+                print("□ ", end="")
+            else:
+                print("■ ", end="")
+        print()
+
+if __name__ == "__main__":
+    put_queen(0)
+    print("总共有{}".format(total))
+```
+
+#### 全排列问题
+
+全排列的生成算法方法是将给定的序列中所有可能的全排列无重复无遗漏地枚举出来。此处全排列的定义是：从n个元素中取出m个元素进行排列，当`n=m`时这个排列被称为全排列
+
+**代码实现:**
+
+```
+data_list = [1, 2, 3, 4]
+arranges = []
+total = 0
+
+def search(depth, datas):
+    if depth == len(data_list)+1:
+        print(arranges)
+        global total
+        total += 1
+    else:
+        for data in datas:
+            # 设置现场
+            arranges.append(data)
+            # 递归
+            next_datas = datas[:]
+            next_datas.remove(data)
+            search(depth+1, next_datas)
+            # 恢复现场
+            arranges.pop()
+
+if __name__ == "__main__":
+    search(1, data_list)
+    print("{}排列方式".format(total))
+```
 
