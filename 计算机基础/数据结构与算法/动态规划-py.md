@@ -50,3 +50,40 @@ def fib_fdg(k):
     return k_1
 ```
 
+#### 递归求解示意图:
+
+![](img/dp_1.PNG)
+
+从递归过程图来看，内部执行重复量是非常大的，很多计算是重复的
+
+![](img/dp_2.PNG)
+
+从递归的耗时我们可以看出，fib_dp(30) 所需的时间是 0.2 秒左右，但 fib_dp(35) 所需的时间是 2 秒左右，计算量增加是惊人的
+
+#### 二分查找
+
+1. 二分查找，也叫折半查找
+2. 二分查找针对有序数组
+3. 算法很多时候考察的是对边界的了解
+
+非递归代码实现:
+
+```
+def search(data_list, target):
+    left = 0
+    right = len(data_list) - 1
+    while left <= right:
+        # 找到 [left, right] 中间的值
+        mid = int((left+right)/2)
+        # 判断中间值与目标值的大小
+        if data_list[mid] == target:
+            print("select ok: {}".format(mid))
+            break
+        elif data_list[mid] < target:
+            # 如果中间值小于目标值，则在右侧继续二分查找
+            left = mid + 1
+        else:
+            # 如果中间值大于目标值，则在左侧继续二分查找
+            right = mid - 1
+```
+
