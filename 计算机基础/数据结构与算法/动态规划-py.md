@@ -87,3 +87,60 @@ def search(data_list, target):
             right = mid - 1
 ```
 
+递归实现二分查找:
+
+```
+def dg_search(left, right, data_list, target):
+    if left > right:
+        return -1
+    mid = int((left + right) / 2)
+    if data_list[mid] == target:
+        return mid
+    elif data_list[mid] < target:
+        # 在右侧继续递归查找
+        return dg_search(mid+1, right, data_list, target)
+    else:
+        # 在左侧继续递归查找
+        return dg_search(left, mid-1, data_list, target)
+```
+
+#### 汉诺塔实现
+
+![](img/dp_3.PNG)
+
+**递归是一个栈的调用过程，先进后出**
+
+阶乘递归实现:
+```
+def jc(n):
+    if n == 1:
+        return 1
+    else:
+        return n*jc(n-1)
+```
+
+**汉诺塔递归实现**
+
+```
+def move(index, start, mid, end):
+    if index == 1:
+        print("{}-->{}".format(start, end))
+        return
+    else:
+        move(index-1, start, end, mid)
+        print("{}-->{}".format(start, end))
+        move(index-1, mid, start, end)
+
+if __name__ == "__main__":
+    move(3, "A", "B", "C")
+```
+
+#### 递归总结
+
+- 写法简单
+- 递归都能通过非递归的方法实现
+- 递归由于是函数调用自身，而函数调用是有时间和空间的消耗，每一次函数调用，都需要在内存中分配空间来保存参数，返回地址以及临时变量，而往栈中压入数据和弹出数据都需要时间，所以效率不高
+- 递归很多计算都是重复的，由于其本质是把一个问题分解成两个或多个小问题，多个小问题存在互相重叠的部分，则存在重复计算
+- 调用栈可能会溢出，每一次函数调用会在内存栈中分配空间，而每个进程的栈容量是有限的，当调用的层次太多时，就会超出栈的容量，导致栈溢出
+
+
