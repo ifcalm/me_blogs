@@ -456,6 +456,7 @@ if __name__ == "__main__":
 
 #### 使用 记忆+搜索+决策 方式
 
+
 ```
 # 数字金字塔问题
 
@@ -485,4 +486,58 @@ if __name__ == "__main__":
     print(search_max(0, 0))
     print(info)
 ```
+
+#### 使用动态规划实现
+
+```
+# 定义一个数字金字塔
+pyramid = [
+    [13],
+    [11, 8],
+    [12, 7, 26],
+    [6, 14, 15, 8],
+    [12, 17, 13, 24, 11]
+]
+
+# 第四层
+for i in range(4):
+    pyramid[3][i] += max(pyramid[4][i], pyramid[4][i+1])
+print(pyramid[3])
+
+# 第三层
+for i in range(3):
+    pyramid[2][i] += max(pyramid[3][i], pyramid[3][i+1])
+print(pyramid[2])
+
+# 第二层
+for i in range(2):
+    pyramid[1][i] += max(pyramid[2][i], pyramid[2][i+1])
+print(pyramid[1])
+
+# 第一层
+print(pyramid[0][0] + max(pyramid[1][0], pyramid[1][1]))
+```
+
+#### 使用动态规划简化写法
+
+上一个代码中的四个 for 循环可以组合成一个双重循环，写法如下:
+
+```
+# 定义一个数字金字塔
+pyramid = [
+    [13],
+    [11, 8],
+    [12, 7, 26],
+    [6, 14, 15, 8],
+    [12, 17, 13, 24, 11]
+]
+
+for j in range(4, 0, -1):
+    for i in range(j):
+        pyramid[j-1][i] += max(pyramid[j][i], pyramid[j][i+1])
+
+print(pyramid[0])
+```
+
+**动态规划不使用递归，是一种自下向上的解法，先得到小问题的最优解，在利用小问题的最优解得出整体最优解**
 
