@@ -366,3 +366,59 @@ if __name__ == "__main__":
 **动态规划方法只适用于求解具有无后效性状态的多阶段决策问题**
 
 
+#### 数字金字塔问题
+
+![](img/dp_5.PNG)
+
+从上到下找一条路径，使数字的和达到最大
+
+
+#### 使用回溯法找出所有的解并从中选出最优解
+
+```
+数字金字塔问题
+
+# 定义一个数字金字塔
+pyramid = [
+    [13],
+    [11, 8],
+    [12, 7, 26],
+    [6, 14, 15, 8],
+    [12, 17, 13, 24, 11]
+]
+
+datas = [13]
+total_path = []
+def search(depth, x, y):
+    if depth == 5:
+        total_path.append(datas[:])
+    else:
+        # 1.选择正下方的值
+
+        # 设置现场
+        datas.append(pyramid[depth][y])
+        # 递归
+        search(depth+1, x+1, y)
+        # 恢复现场
+        datas.pop()
+
+        # 2.选择右下方的值
+        # 设置现场
+        datas.append(pyramid[depth][y+1])
+        # 递归
+        search(depth+1, x+1, y+1)
+        # 恢复现场
+        datas.pop()
+
+if __name__ == "__main__":
+    search(1, 0, 0)
+    max = 0
+    max_pos = 0
+    for index, data in enumerate(total_path):
+        if sum(data) > max:
+            max = sum(data)
+            max_pos = index
+
+    print(total_path[max_pos])
+```
+
