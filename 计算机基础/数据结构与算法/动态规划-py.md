@@ -297,3 +297,41 @@ search(num)
 -----------------------------------------------
 
 ### 动态规划
+
+#### 记忆+搜索算法
+
+还是斐波拉契数列，我们采用 **记忆 + 搜素** 的模式，可以把时间降低很多
+
+**在递归的过程中，会存在很多的重复计算，此时，我们可以把计算过的值存储在一个字典表里，下次递归的时候先去查询字典表中是否存在该值，若存在，则直接取用，不在进行重复计算**
+
+```
+from collections import defaultdict
+total = defaultdict(int)
+
+def fib(k):
+    assert k > 0, "k > 0"
+    if k in [1, 2]:
+        return 1
+    global total
+    
+    # 搜索该值是否被记忆过，若记录过，则直接返回，减少重复计算
+    if k in total:
+        result = total[k]
+    else:
+        result = fib(k-1) + fib(k-2)
+        total[k] = result
+    return result
+
+if __name__ == "__main__":
+    # 搜索 + 记忆 算法
+    from datetime import datetime
+    start_time = datetime.now()
+    print(fib(50))
+    print("递归耗时: {}".format((datetime.now()-start_time).total_seconds()))
+```
+
+从下面结果图可以看出，执行时间明显降低
+
+![](img/dp_4.PNG)
+
+
