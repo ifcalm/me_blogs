@@ -613,6 +613,73 @@ phone.sendMessage(); //调用 sendMessage() 方法
 ```
 
 
+### 成员变量 & 局部变量
+
+- 成员变量, 在类中定义, 就是属性
+- 局部变量, 在类的方法中定义, 方法中临时保存数据
+
+
+![](img/java_5.PNG)
+
+
+局部变量的作用域仅限于定义它的方法, 成员变量的作用域在整个类内部都是可见的
+
+**成员变量和局部变量同名时，局部变量具有更高的优先级**
+
+
+### Java 中的构造方法
+
+- 使用 `new + 构造方法` 创建一个新的对象, 例 `Phone phone = new Phone();`
+- 构造方法是定义在java类中的一个用来初始化对象的方法
+- 构造方法与类同名, 且没有返回值
+
+
+![](img/java_6.PNG)
+
+```
+public class Phone {
+    public Phone() {
+        System.out.println("无参构造方法");
+    }
+}
+```
+
+带参构造方法, 初始化对象成员变量的值
+
+```
+public class Phone {
+    float screen;
+    float cpu;
+    float mem;
+
+    //无参构造方法
+    public Phone() {
+        System.out.println("无参构造方法");
+    }
+
+    //有参构造方法
+    public Phone(float newScreen, float newCpu, float newMem) {
+        screen = newScreen;
+        cpu = newCpu;
+        mem = newMem;
+    }
+
+    //使用无参构造方法创建对象
+    Phone phone1 = new Phone();
+
+    //使用有参构造方法初始化对象
+    Phone phone = new Phone(5.0f, 1.4f, 2.0f);
+}
+```
+
+无参构造方法和有参构造方法可以共存
+
+
+**当没有指定构造方法时，系统会自动添加无参的构造方法**
+
+当程序指定构造方法时，系统不会自动添加无参的构造方法，需要在初始化对象时自行选择添加自定义的构造方法
+
+构造方法的重载, 方法名相同，单参数不同的多个方法，调用时会自动根据不同的参数选择相应的方法
 
 
 
