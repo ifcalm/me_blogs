@@ -210,3 +210,251 @@ public class HelloWorld{
 **常量名一般使用大写字符**
 
 
+### Java 中如何使用注释
+
+在编写程序时，经常需要添加一些注释，用以描述某段代码的作用
+
+Java 中注释有三种类型:
+- 单行注释
+- 多行注释
+- 文档注释
+
+![](img/java_2.PNG)
+
+
+### Java 运算符
+
+运算符是一种**功能**符号，用以通知 Java 进行相关的运算
+
+- 算术运算符
+- 赋值运算符
+- 比较运算符
+- 逻辑运算符
+- 条件运算符
+
+
+### 算术运算符
+
+- `+`
+- `-`
+- `*`
+- `/`
+- `%`
+- `++`
+- `--`
+
+`++` 和 `--` 既可以出现在操作数的左边，也可以出现在右边，但结果是不同的
+
+自增和自减运算符只能用于**操作变量**，不能直接用于操作数值或常量！例如 `5++` 、 `8--` 等写法都是错误的
+
+```
+public class HelloWorld{
+    public static void main(String[] args) {
+		int age1=24;
+		int age2=18;
+		int age3=36;
+		int age4=27;
+		
+		int sum = age1 + age2 + age3 + age4;
+		double avg = sum/4;
+		int minus = age1 - age2;
+		int newAge = --age1;
+		
+	    System.out.println("年龄总和："+sum);
+    	System.out.println("平均年龄："+avg);
+		System.out.println("年龄差值："+minus);
+		System.out.println("自减后的年龄："+newAge);
+
+	}
+}
+```
+
+
+### 赋值运算符
+
+- `=`
+- `+=`
+- `-=`
+- `*=`
+- `/=`
+- `%=`
+
+
+### 比较运算符
+
+- `>`
+- `<`
+- `>=`
+- `<=`
+- `==`
+- `!=`
+
+
+ `> 、 < 、 >= 、 <=` 只支持左右两边操作数是数值类型
+
+ `== 、 !=` 两边的操作数既可以是数值类型，也可以是引用类型
+
+ ### 逻辑运算符
+
+ - `&&`, 与
+ - `||`, 或
+ - `!`, 非, 取反的意思
+ - `~`, 异或, 如果 a, b 有且只有一个 true, 则返回 true
+
+
+当使用逻辑运算符时，我们会遇到一种很有趣的**短路**现象, 要注意
+
+
+### 条件运算符
+
+- `? : `
+
+也称为三元运算符
+
+语法形式：`布尔表达式 ？ 表达式1 ：表达式2`
+
+运算过程：**如果布尔表达式的值为 true ，则返回 表达式1 的值，否则返回 表达式2 的值**
+
+```
+String str = (8>5) ? "8>5" : "8<5";
+System.out.println(str);
+```
+
+
+### Java 运算符的优先级
+
+![](img/java_3.PNG)
+
+### Java 条件语句
+
+`if ...`
+```
+int score = 92;
+if(score>90){
+    System.out.println("good");
+}
+```
+
+如果 if 条件成立时的执行语句只有一条，是可以省略大括号的！但如果执行语句有多条，那么大括号就是不可或缺的
+
+`if ...else ...`
+```
+int score = 85;
+if(score>90){
+    System.out.println("Good");
+}else{
+    System.out.println("Bad");
+}
+```
+
+`if ...else if ...else ...`
+
+```
+int score = 85;
+if (score>90){
+    System.out.println("Good");
+}else if (score>70){
+    System.out.println("OK");
+}else{
+    System.out.println("Bad");
+}
+```
+
+**条件判断语句可以多次嵌套**
+
+
+`switch`
+
+```
+int num = 1;
+switch(num){
+    case 1:
+        System.out.println("1");
+        break;
+    case 2:
+        System.out.println("2");
+        break;
+    case 3:
+        System.out.println("3");
+        break;
+    default:
+        System.out.println("ok");
+}
+```
+
+当 `switch` 后表达式的值和 `case` 语句后的值相同时，从该位置开始向下执行，直到遇到 `break` 语句或者 `switch` 语句块结束；如果没有匹配的 `case` 语句则执行 `default` 块的代码
+
+- `switch` 后面小括号中表达式的值必须是整型或字符型
+- `case` 后面的值可以是常量数值，如 1、2；也可以是一个常量表达式，如 2+2 ；但不能是变量或带有变量的表达式，如 a * 2
+- `case` 匹配后，执行匹配块里的程序代码，如果没有遇见 `break` 会继续执行下一个的 `case` 块的内容，直到遇到 `break` 语句或者 `switch` 语句块结束
+- 可以把功能相同的 `case` 语句合并起来
+- default 块可以出现在任意位置，也可以省略
+
+
+```
+case 1:
+case 2:
+    Syetem.out.println("ok");
+```
+
+### Java 循环语句
+
+java 常用的三种循环
+
+- while
+- do ... while
+- for
+
+`while`, 先判断,后执行
+```
+int i = 1;
+while(i < 1000){
+    System.out.println("Hello java");
+    i++;
+}
+```
+
+`do ...while`, 先执行一次, 在做判断
+
+```
+int i = 1;
+do {
+    System.out.println("ok");
+    i++;
+} while(i < 100);
+```
+
+**do...while 语句保证循环至少被执行一次**
+
+`for`
+
+```
+for (int i = 1; i <= 1000; i++) {
+    System.out.println("ok " + i);
+    i++;
+}
+```
+
+`for` 关键字后面括号中的三个表达式必须用 `;` 隔开，三个表达式都可以省略，但 `;` 不能省略
+
+for 循环变量初始化和循环变量变化部分，可以是使用 “,” 同时初始化或改变多个循环变量的值
+```
+for (int i = 1, j = 5; i < 5; i++, j--) {
+    System.out.println("ok " + (i+j));
+}
+```
+
+循环条件部分可以使用逻辑运算符组合的表达式，表示复杂判断条件
+```
+for (int i = 1; i < 10 && i != 5; i++) {
+    System.out.println(i);
+}
+```
+
+### java 循环跳转语句
+
+
+
+
+
+
