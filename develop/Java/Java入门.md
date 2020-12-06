@@ -792,3 +792,59 @@ public class HelloWorld() {
 
 ------------------------------------
 
+### 封装
+
+将类的某些信息隐藏在类内部，不允许外部程序直接访问，而是通过该类提供的方法来实现对隐藏信息的操作和访问
+
+- 只能通过规定的方法访问数据
+- 隐藏类的实例细节，方便修改和实现
+
+
+#### 封装的实现步骤
+
+![](img/java_7.PNG)
+
+```
+public class Phone {
+    private float screen;
+    private float cpu;
+    private float mem;
+
+    //获取一个属性值，返回类型是 float
+    public float getScreen() {
+        return screen;
+    }
+
+    public void setScreen(float newScreen) {
+        screen = newScreem;
+    }
+
+    //通过方法来获取属性值
+    public static void main(String[] args) {
+        Phone phone = new Phone();
+        phone.setScreen(6.0f);
+        System.out.println(phone.getScreen());
+    }
+}
+```
+
+### 使用包管理 Java 中的类
+
+#### 包的作用
+
+- 管理 java 文件
+- 解决同名文件冲突
+
+#### 定义包
+
+`package 包名`
+
+- 必须放在java源程序的第一行
+- 包名间可以使用 `.` 号隔开
+- eg: `com.ifcalm.Muclass`
+
+
+#### 包的使用
+
+- 可以通过 `import` 关键字, 在某个文件中使用其他文件中的类, `import com.ifcalm.movie.Myclass`
+
