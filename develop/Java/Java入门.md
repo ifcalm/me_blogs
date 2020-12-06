@@ -847,4 +847,10 @@ public class Phone {
 #### 包的使用
 
 - 可以通过 `import` 关键字, 在某个文件中使用其他文件中的类, `import com.ifcalm.movie.Myclass`
+- java 中，包的命名规范是全小写字母拼写
+- 使用的时候可以加载某个包下的所有文件, `com.ifcalm.*`
+- 也可以加载某个具体子包下的所有文件, `com.ifcalm.movie.*`
+
+
+
 
