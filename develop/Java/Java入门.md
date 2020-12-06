@@ -682,5 +682,113 @@ public class Phone {
 构造方法的重载, 方法名相同，单参数不同的多个方法，调用时会自动根据不同的参数选择相应的方法
 
 
+### Java 中的 static 之静态变量
 
+我们可以基于一个类创建多个该类的对象，每个对象都拥有自己的成员，互相独立。然而在某些时候，我们更希望该类所有的对象共享同一个成员。此时就是 `static` 大显身手的时候了
+
+Java 中被 `static` 修饰的成员称为静态成员或类成员。它属于整个类所有，而不是某个对象所有，即被类的所有对象所共享。静态成员可以使用类名直接访问，也可以使用对象名进行访问
+
+**使用 static 可以修饰变量、方法和代码块**
+
+```
+public class HelloWorld {
+    //static 修饰的变量为静态变量，所有该类的对象共享该静态变量
+    static String ifcalm = "java";
+
+    public static void main(String[] args) {
+        //静态变量可以直接用类名来访问，无需创建类的对象
+        System.out.println(HelloWorld.ifcalm);
+        //创建类的对象
+        HelloWorld hello = new HelloWorld();
+        //使用对象名来访问静态变量
+        System.out.println(hello.ifcalm);
+        //使用对象名访问的形式修改静态变量的值
+        hello.ifcalm = "golang";
+        //再次使用类名访问该静态变量，值已经被修改
+        System.out.println(HelloWorld.ifcalm);
+    }
+}
+```
+
+**静态成员属于整个类，当系统第一次使用该类时，就会为其分配内存空间**
+
+
+### Java 中的 static 之静态方法
+
+**与静态变量一样，我们也可以使用 static 修饰方法，称为静态方法或类方法。其实之前我们一直写的 main 方法就是静态方法**
+
+```
+public calss HelloWorld {
+    //使用 static 关键字声明静态方法
+    public static void print() {
+        System.out.println("static method");
+    }
+
+    public static void main(String [] args) {
+        //直接使用类名来调用静态方法
+        HelloWorld.print();
+
+        //通过对象名调用静态方法
+        HelloWorld hello = new HelloWorld();
+        hello.print();
+    }
+}
+```
+
+#### 关于 static 需要注意的几点
+
+- 静态方法中可以直接调用同类中的静态成员，但不能直接调用非静态成员
+- 如果希望在静态方法中调用非静态变量，可以通过创建类的对象，然后通过对象来访问非静态变量
+- 在普通成员方法中，则可以直接访问同类的非静态变量和静态变量
+- 静态方法中不能直接调用非静态方法，需要通过对象来访问非静态方法
+
+
+### Java 中的 static 之静态初始化块
+
+在类的声明中，可以包含多个初始化块，当创建类的实例时，就会依次执行这些代码块。如果使用 static 修饰初始化块，就称为静态初始化块
+
+**静态初始化块只在类加载时执行，且只会执行一次，同时静态初始化块只能给静态变量赋值，不能初始化普通的成员变量**
+
+```
+public class HelloWorld() {
+    int num1;
+    int num2;
+    static int num3;  //声明静态变量 num3
+
+    //构造方法
+    public HelloWorld() {
+        num1 = 91;
+        System.out.println("通过构造方法为变量 num1 赋值");
+
+        //初始化块
+        {
+            num2 = 74;
+            System.out.println("通过初始化块为变量 num2 赋值");
+        }
+
+        //静态初始化块
+        static {
+            num3 = 83;
+            System.out.println("通过静态初始化块为静态变量 num3 赋值");
+        }
+    }
+
+    public static void main(String[] args) {
+        //创建类的对象 hello
+        HelloWorld hello = new HelloWorld();
+        System.out.println(hello.num1);
+        System.out.println(hello.num2);
+
+        System.out.println(num3);
+
+        //再次创建类的对象 hello2
+        HelloWorld hello2 = new HelloWorld();
+    }
+}
+```
+
+**程序运行时静态初始化块最先被执行，然后执行普通初始化块，最后才执行构造方法。由于静态初始化块只在类加载时执行一次，所以当再次创建对象 hello2 时并未执行静态初始化块**
+
+
+------------------------------------
 
