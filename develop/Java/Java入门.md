@@ -852,5 +852,14 @@ public class Phone {
 - 也可以加载某个具体子包下的所有文件, `com.ifcalm.movie.*`
 
 
+### java 中的访问修饰符
+
+可以修饰属性和方法的访问范围
+
+- `private`, 本类
+- `protected`, 本类，同包，子类
+- `public`, 本类，同包，子类，其他
+- 默认是 本类和同包
+
 
 
