@@ -1041,3 +1041,119 @@ public class Dog extends Animal {
 
 ### java 中方法的重写
 
+如果子类对继承父类的方法不满意，是可以重写父类继承的方法的，当调用方法时会优先调用子类的方法
+
+`返回值类型，方法名，参数类型及个数` 都要与父类继承的方法相同，才叫方法的重写
+
+
+```
+public class Animal {
+    public int age;
+    public String name;
+
+    public void eat() {
+        System.out.println("eat food");
+    }
+}
+
+public class Dog extends Animal {
+    Dog dog = new Dog();
+    dog.age = 10;
+    dog.name = "ifcalm";
+
+    //重写父类的eat() 方法
+    public void eat() {
+        System.out.println("dog eat food");
+    }
+}
+```
+
+### java 中继承的初始化顺序
+
+先初始化父类在初始化子类
+
+### final 关键字
+
+final 可以修饰类，方法，属性和变量
+
+- final 修饰类，则该类不允许被继承
+- final 修饰方法，则该方法不允许被重写
+- final 修饰属性，则该属性的值只能赋一次
+- final 修饰变量，即变为常量
+
+```
+final public class Animal {
+    final public int age;
+    public String name;
+
+    final public void eat() {
+        System.out.println("eat food");
+    }
+}
+
+public class Dog extends Animal {
+    Dog dog = new Dog();
+    dog.age = 10;
+    dog.name = "ifcalm";
+}
+```
+
+### super 关键字
+
+在对象的内部使用，可以代表父类对象
+
+- super.age 访问父类的属性
+- super.eat() 访问父类的方法
+
+
+```
+public class Animal {
+    public int age;
+    public String name;
+
+    public void eat() {
+        System.out.println("eat food");
+    }
+}
+
+public class Dog extends Animal {
+    public int age 20;
+    Dog dog = new Dog();
+    dog.age = 10;
+    dog.name = "ifcalm";
+
+    //重写父类的eat() 方法
+    public void eat() {
+        System.out.println("dog eat food");
+    }
+
+    //调用父类的属性
+    public void method() {
+        //获取父类的 age 属性值
+        System.out.println(super.age);
+
+        //获取子类的 age 属性
+        System.out.println(age);
+    }
+
+    //调用父类的方法
+    public void func() {
+        super.eat();
+    }
+}
+```
+
+**子类的构造过程当中必须调用其父类的构造方法**
+
+
+### Object 类
+
+Object类 是所有类的父类，如果一个类没有使用 extends 关键字，那这个类默认继承 Object类
+
+#### toString() 方法
+
+
+#### equals() 方法
+
+
+
