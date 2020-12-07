@@ -862,4 +862,182 @@ public class Phone {
 - 默认是 本类和同包
 
 
+### Java 中的 this 关键字
+
+- this 关键字代表当前对象
+- this.属性，操作当前对象的属性
+- this.方法，调用当前对象的方法
+- 封装对象的时候，经常会使用 this 关键字
+
+```
+public class Phone {
+    private float screen;
+    private float cpu;
+    private float mem;
+
+    public void sendMessage() {
+        System.out.println("send msg");
+    }
+
+    public float getScreen() {
+        return screen;
+    }
+
+    public void setScreen(float screen) {
+        this.screen = screen;
+        this.sendMessage();
+    }
+}
+```
+
+
+### 什么是 java 中的内部类
+
+内部类就是定义在一个类里面的类。与之对应，包含内部类的类被称为外部类
+
+#### 内部类的主要作用如下
+
+- 内部类提供了更好的封装，可以把内部类隐藏在外部类之内，不允许同一个包中的其他类访问该类
+- 内部类的方法可以直接访问外部类的所有数据，包括私有的数据
+- 内部类所实现的功能使用外部类同样可以实现，只是有时使用内部类更方便
+
+
+#### 内部类可以分为以下几种
+
+- 成员内部类
+- 静态内部类
+- 方法内部类
+- 匿名内部类
+
+
+#### 成员内部类
+
+```
+public class Outer {
+    private int a = 99;
+
+    //内部类
+    public class Inner {
+        int b = 2;
+        public void test() {
+            System.out.println(a);
+            System.out.println(b);
+        }
+    }
+
+    public static void main(String[] args) {
+        //创建外部类对象
+        Outer o = new Outer();
+        //创建内部类对象
+        Inner i = o.new Inner();
+        i.test();
+    }
+}
+```
+
+定义了成员内部类后，必须使用外部类对象来创建内部类对象，而不能直接去 new 一个内部类对象，即：`内部类 对象名 = 外部类对象.new 内部类( );`
+
+
+#### 静态内部类
+
+静态内部类是 static 修饰的内部类
+
+```
+public class Outer {
+    private int a = 99;
+    static int b = 1;
+
+    //内部类
+    public static class Inner {
+        int b = 2;
+        public void test() {
+            //访问外部类中的b
+            System.out.println(Outer.b);
+            System.out.println(b);
+        }
+    }
+
+    public static void main(String[] args) {
+        //直接创建内部类对象
+        Inner i = new Inner();
+        i.test();
+    }
+}
+```
+
+创建静态内部类的对象时，不需要外部类的对象，可以直接创建 `内部类 对象名= new 内部类();`
+
+
+#### 方法内部类
+
+方法内部类就是内部类定义在外部类的方法中，方法内部类只在该方法的内部可见，即只在该方法内可以使用
+
+```
+public class Outer {
+    //外部类的方法
+    public void show() {
+        final int a = 25;  //常量·
+        int b  = 13;
+
+        //方法内部类
+        class Inner {
+            int c = 2;
+            public void print() {
+                System.out.println(a);
+                System.out.println(c);
+            }
+        }
+        //创建方法内部类的对象
+        Inner i = new Inner();
+        i.print();
+    }
+
+    public static void main(String[] args) {
+        Outer o = new Outer();
+        o.show();
+    }
+}
+```
+
+**由于方法内部类不能在外部类的方法以外的地方使用，因此方法内部类不能使用访问控制符和 static 修饰符**
+
+
+### Java 中的继承
+
+继承是类与类的一种关系，是 `is a` 的关系
+
+狗类是一种动物类
+
+继承的好处:
+
+- 子类拥有父类的所有属性和方法
+- 实现代码复用
+
+```
+class Son extend Father {
+    ...
+}
+```
+
+继承的关键字 `extends`
+
+```
+public class Animal {
+    public int age;
+    public String name;
+
+    public void eat() {
+        System.out.println("eat food");
+    }
+}
+
+public class Dog extends Animal {
+    Dog dog = new Dog();
+    dog.age = 10;
+    dog.name = "ifcalm";
+    dog.eat();
+}
+```
+
+### java 中方法的重写
 
