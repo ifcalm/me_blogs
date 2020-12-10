@@ -179,3 +179,82 @@ print(z)
 可变数据: 列表, 字典, 集合(set)
 
 
+### 数字类型
+
+Python3 支持 `int、float、bool、complex（复数）`
+
+在Python 3里，只有一种整数类型 `int`，表示为长整型
+
+内置的 `type()` 函数可以用来查询变量所指的对象类型
+
+```
+x, y, z = 3, "ifcalm", True
+print(x)
+print(y)
+print(z)
+print(type(x))
+print(type(y))
+print(type(z))
+```
+
+输出的内容为:
+
+```
+3
+ifcalm
+True
+<class 'int'>
+<class 'str'>
+<class 'bool'>
+```
+
+还可以用 `isinstance` 来判断类型:
+
+```
+x, y, z = 3, "ifcalm", True
+v = isinstance(x, int)
+print(v)
+```
+
+### isinstance 和 type 的区别
+
+待补充
+
+
+```
+class A:
+    pass
+
+class B(A):
+    pass
+
+v_1 = isinstance(A(), A)
+print(v_1)
+
+if (type(A()) == A):
+    print(True)
+else:
+    print(False)
+
+v_2 = isinstance(B(), A)
+print(v_2)
+
+if (type(B() == A)):
+    print(True)
+else:
+    print(False)
+```
+
+
+**以使用`del`语句删除一些对象引用**
+
+```
+x, y, z = 3, "ifcalm", True
+del x     # 删除单个对象
+del x, y  # 删除多个对象
+```
+
+
+### 数值运算
+
+
