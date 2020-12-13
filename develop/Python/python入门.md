@@ -848,3 +848,248 @@ while True:
 
 ### Python 函数
 
+函数是组织好的，可重复使用的，用来实现单一，或相关联功能的代码段
+
+函数能提高应用的模块性，和代码的重复利用率
+
+#### 定义一个函数
+
+- 函数代码块以 `def` 关键词开头，后接函数标识符名称和圆括号 `()`
+- 任何传入参数和自变量必须放在圆括号中间，圆括号之间可以用于定义参数
+- `return [表达式]` 结束函数，选择性地返回一个值给调用方，不带表达式的 `return` 相当于返回 `None`
+
+
+```
+def 函数名(参数列表):
+    函数体
+```
+
+```
+def max(a, b):
+    if a > b:
+        return a
+    else:
+        return b
+
+a = 4
+b = 5
+print(max(a, b))
+```
+
+#### 函数调用
+
+#### 匿名函数
+
+python 使用 `lambda` 来创建匿名函数
+
+
+#### return 语句
+
+`return [表达式]` 语句用于退出函数，选择性地向调用方返回一个表达式。不带参数值的`return`语句返回`None`
+
+
+### Python 数据结构
+
+- 列表
+- 元组
+- 集合
+- 字典
+
+### 列表推导式
+
+每个列表推导式都在 `for` 之后跟一个表达式，然后有零到多个 `for` 或 `if` 子句。返回结果是一个根据表达从其后的 `for` 和 `if` 上下文环境中生成出来的列表。如果希望表达式推导出一个元组，就必须使用括号
+
+```
+list = [2, 3, 4]
+l_1 = [2*x for x in list]
+
+l_2 = [[x, x**2] for x in list]
+
+l_3 = [3*x for x in list if x > 3]
+```
+
+
+### 遍历
+
+在字典中遍历时，关键字和对应的值可以使用 `items()` 方法同时解读出来
+
+在序列中遍历时，索引位置和对应值可以使用 `enumerate()`函数同时得到
+
+
+```
+list = [25, "ifcalm", 3.14, "email", True]
+for i, v in enumerate(list):
+    print(i, v)
+```
+
+
+### Python 模块
+
+模块是一个包含所有你定义的函数和变量的文件，其后缀名是.py。模块可以被别的程序引入，以使用该模块中的函数等功能。这也是使用 python 标准库的方法
+
+
+#### import 语句
+
+```
+import sys
+```
+
+#### from … import 语句
+
+Python 的 `from` 语句让你从模块中导入一个指定的部分到当前命名空间中
+
+#### from … import * 语句
+
+把一个模块的所有内容全都导入到当前的命名空间也是可行的
+
+
+### 包
+
+
+### Python 输入输出
+
+- 输出, print()
+- 输入, input()
+
+
+### Python 文件处理
+
+### Python os模块
+
+
+### Python 错误和异常
+
+异常捕捉可以使用 `try/except` 语句
+
+```
+while True:
+    try:
+        x = int(input("请输入一个数字: "))
+        break
+    except ValueError:
+        print("您输入的不是数字，请再次尝试输入！")
+```
+
+
+`try` 语句按照如下方式工作:
+
+- 首先，执行 `try` 子句
+- 如果没有异常发生，忽略 `except` 子句，`try` 子句执行后结束
+- 如果在执行 `try` 子句的过程中发生了异常，那么 try 子句余下的部分将被忽略。如果异常的类型和 `except` 之后的名称相符，那么对应的 `except` 子句将被执行
+- 如果一个异常没有与任何的 `except` 匹配，那么这个异常将会传递给上层的 `try` 中
+
+
+一个 `try` 语句可能包含多个`except`子句，分别来处理不同的特定的异常。最多只有一个分支会被执行
+
+
+一个`except`子句可以同时处理多个异常，这些异常将被放在一个括号里成为一个元组
+
+```
+except (RuntimeError, TypeError, NameError):
+    pass
+```
+
+最后一个`except`子句可以忽略异常的名称，它将被当作通配符使用。你可以使用这种方法打印一个错误信息，然后再次把异常抛出
+
+```
+import sys
+
+try:
+    f = open('myfile.txt')
+    s = f.readline()
+    i = int(s.strip())
+except OSError as err:
+    print("OS error: {0}".format(err))
+except ValueError:
+    print("Could not convert data to an integer.")
+except:
+    print("Unexpected error:", sys.exc_info()[0])
+    raise
+```
+
+`try/except` 语句还有一个可选的 `else` 子句，如果使用这个子句，那么必须放在所有的 `except` 子句之后
+
+```
+for arg in sys.argv[1:]:
+    try:
+        f = open(arg, 'r')
+    except IOError:
+        print('cannot open', arg)
+    else:
+        print(arg, 'has', len(f.readlines()), 'lines')
+        f.close()
+```
+
+`else` 子句将在 `try` 子句没有发生任何异常的时候执行
+
+
+#### try-finally 语句
+
+`try-finally` 语句无论是否发生异常都将执行最后的代码
+
+```
+try:
+    ifcalm()
+except AssertionError as error:
+    print(error)
+else:
+    try:
+        with open('file.log') as file:
+            read_data = file.read()
+    except FileNotFoundError as fnf_error:
+        print(fnf_error)
+finally:
+    print('这句话，无论异常是否发生都会执行。')
+```
+
+#### 抛出异常
+
+Python 使用 `raise` 语句抛出一个指定的异常
+
+```
+x = 10
+if x > 5:
+    raise Exception('x 不能大于 5。x 的值为: {}'.format(x))
+```
+
+### Python 面向对象
+
+面向对象基本特征:
+
+- 类
+- 方法
+- 类变量
+- 对象
+- 方法重写
+- 局部变量
+- 继承
+- 实例化
+
+
+类的继承机制允许多个基类，派生类可以覆盖基类中的任何方法，方法中可以调用基类中的同名方法
+
+
+#### 类定义
+
+```
+class ClassName:
+    pass
+```
+
+#### 类对象
+
+```
+class MyClass:
+    """一个简单的类实例"""
+    i = 12345
+    def f(self):
+        return 'hello world'
+ 
+# 实例化类
+x = MyClass()
+ 
+# 访问类的属性和方法
+print("MyClass 类的属性 i 为：", x.i)
+print("MyClass 类的方法 f 输出为：", x.f())
+```
+
