@@ -450,3 +450,24 @@ print(d_2.values()) # 输出所有的值
 
 ### Python 数据类型转换
 
+- int(x), 将 x 转换为一个整数
+- float(x), 将 x 转换为一个浮点数
+- str(x), 将对象x转换为字符串
+- tuple(s), 将序列 s 转换为元组
+- list(s), 将序列 s 转换为列表
+- set(s), 将序列转换为集合
+- dict(d), 创建一个字典
+
+
+```
+str_1 = "4"
+val_1 = int(str_1)
+print(val_1)
+print(float(val_1))
+
+str_2 = "ifcalm"
+print(tuple(str_2))
+print(list(str_2))
+print(set(str_2))
+```
+
