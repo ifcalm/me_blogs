@@ -690,3 +690,161 @@ print(f"{x+1=}")
 
 待补充
 
+
+**关键字end可以用于将结果输出到同一行，或者在输出的末尾添加不同的字符**
+
+```
+a, b = 0, 1
+while (b < 100):
+    print(b, end=',')
+    a, b = b, a+b
+```
+
+### Python 条件控制
+
+Python 条件语句是通过一条或多条语句的执行结果（`True` 或者 `False`）来决定执行的代码块
+
+```
+if condition_1:
+    pass
+elif condition_2:
+    pass
+else:
+    pass
+```
+
+Python 中用 `elif` 代替了 `else if`，所以`if`语句的关键字为：`if – elif – else`
+
+- 每个条件后面要使用冒号 `:`，表示接下来是满足条件后要执行的语句块
+- 使用缩进来划分语句块，相同缩进数的语句在一起组成一个语句块
+- 在Python中没有`switch – case`语句
+
+
+#### if 嵌套
+
+在嵌套 `if` 语句中，可以把 `if...elif...else` 结构放在另外一个 `if...elif...else` 结构中
+
+### Python 循环语句
+
+Python 中的循环语句有 `for` 和 `while`
+
+**在 Python 中没有 `do..while` 循环**
+
+#### while 循环使用 else 语句
+
+```
+while expr:
+    pass
+else:
+    pass
+```
+
+#### for 语句
+
+Python `for`循环可以遍历任何序列的项目，如一个列表或者一个字符串
+
+```
+for var in seq:
+    pass
+else:
+    pass
+```
+
+**break 语句用于跳出当前循环体**
+
+
+#### range()函数
+
+如果你需要遍历数字序列，可以使用内置range()函数。它会生成数列
+```
+for i in range(5):
+    print(i)
+```
+
+你也可以使用range指定区间的值
+```
+for i in range(5, 9):
+    print(i)
+```
+
+也可以使range以指定数字开始并指定不同的增量(甚至可以是负数，有时这也叫做'步长')
+```
+for i in range(0, 10, 3):
+    print(i)
+```
+
+#### 中断循环
+
+- break 语句可以跳出 for 和 while 的循环体。如果你从 for 或 while 循环中终止，任何对应的循环 else 块将不执行
+- continue 语句被用来告诉 Python 跳过当前循环块中的剩余语句，然后继续进行下一轮循环
+
+
+### pass 语句
+
+Python `pass`是空语句，是为了保持程序结构的完整性,`pass` 不做任何事情，一般用做占位语句
+
+
+### Python 迭代器与生成器
+
+迭代是Python最强大的功能之一，是访问集合元素的一种方式
+
+**迭代器是一个可以记住遍历的位置的对象**
+
+迭代器对象从集合的第一个元素开始访问，直到所有的元素被访问完结束。迭代器只能往前不会后退
+
+迭代器有两个基本的方法:
+- iter()
+- next()
+
+字符串，列表或元组对象都可用于创建迭代器:
+```
+list = [1, 2, 3, 4]
+it = iter(list)
+print(next(it))
+print(next(it))
+```
+
+迭代器对象可以使用常规for语句进行遍历:
+```
+list = [1, 2, 3, 4]
+it = iter(list)
+for x in it:
+    print(x, end=" ")
+```
+
+#### 生成器
+
+在 Python 中，使用了 `yield` 的函数被称为生成器
+
+跟普通函数不同的是，生成器是一个返回迭代器的函数，只能用于迭代操作，更简单点理解生成器就是一个迭代器
+
+在调用生成器运行的过程中，每次遇到 `yield` 时函数会暂停并保存当前所有的运行信息，返回 `yield` 的值, 并在下一次执行 `next()` 方法时从当前位置继续运行。
+
+调用一个生成器函数，返回的是一个迭代器对象
+
+```
+import sys
+
+# 生成器函数 - 斐波那契
+def fib(n):
+    a, b, counter = 0, 1, 0
+    while True:
+        if (counter > n):
+            return
+        yield a
+        a, b = b, a+b
+        counter += 1
+
+# f 是一个迭代器，由生成器返回生成
+f = fib(10)
+
+while True:
+    try:
+        print(next(f), end=" ")
+    except StopIteration:
+        sys.exit()
+```
+
+
+### Python 函数
+
