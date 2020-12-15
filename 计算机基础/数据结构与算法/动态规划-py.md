@@ -586,3 +586,6 @@ print(pyramid[0])
 ![](img/dp_6.PNG)
 
 
+
+#### 0-1 背包问题
+
