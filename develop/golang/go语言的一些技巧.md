@@ -120,3 +120,22 @@ if _, ok := m[key], ok {
 通过双赋值检测某个键是否存在： `elem, ok = m[key]` 若 key 在 m 中，ok 为 `true` ；否则，ok 为 `false`。 若 key 不在映射中，那么 elem 是该映射元素类型的零值。 同样的，当从映射中读取某个不存在的键时，结果是映射的元素类型的零值。 注 ：若 elem 或 ok 还未声明，你可以使用短变量声明： `elem, ok := m[key]`
 
 
+### 切片的初始化
+
+```
+s := []string{}   //创建一个空切片
+s_2 := make([]string, 5)   //使用 make 创建切片
+var s_3 []string
+```
+
+### 字典的初始化
+
+```
+var m map[string]string
+
+m_1 := map[string]string{
+    "name": "lss",
+    "age": "25",
+}
+```
+
