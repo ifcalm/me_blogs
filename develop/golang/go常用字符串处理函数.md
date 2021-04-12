@@ -83,3 +83,27 @@ Split 会将 s 中的 sep 去掉，而 SplitAfter 会保留 sep
 
 ### 字符串是否有某个前缀或后缀
 
+```
+// s 中是否以 prefix 开始
+func HasPrefix(s, prefix string) bool {
+  return len(s) >= len(prefix) && s[0:len(prefix)] == prefix
+}
+// s 中是否以 suffix 结尾
+func HasSuffix(s, suffix string) bool {
+  return len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
+}
+```
+
+如果 prefix 或 suffix 为 "" , 返回值总是 true
+
+```
+fmt.Println(strings.HasPrefix("Gopher", "Go"))
+fmt.Println(strings.HasPrefix("Gopher", "C"))
+fmt.Println(strings.HasPrefix("Gopher", ""))
+fmt.Println(strings.HasSuffix("Amigo", "go"))
+fmt.Println(strings.HasSuffix("Amigo", "Ami"))
+fmt.Println(strings.HasSuffix("Amigo", ""))
+```
+
+### 字符或子串在字符串中出现的位置
+
