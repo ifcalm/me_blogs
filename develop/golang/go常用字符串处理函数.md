@@ -107,3 +107,32 @@ fmt.Println(strings.HasSuffix("Amigo", ""))
 
 ### 字符或子串在字符串中出现的位置
 
+```
+// 在 s 中查找 sep 的第一次出现，返回第一次出现的索引
+func Index(s, sep string) int
+
+// 在 s 中查找字节 c 的第一次出现，返回第一次出现的索引
+func IndexByte(s string, c byte) int
+
+// chars 中任何一个 Unicode 代码点在 s 中首次出现的位置
+func IndexAny(s, chars string) int
+
+// 查找字符 c 在 s 中第一次出现的位置，其中 c 满足 f(c) 返回 true
+func IndexFunc(s string, f func(rune) bool) int
+
+// Unicode 代码点 r 在 s 中第一次出现的位置
+func IndexRune(s string, r rune) int
+
+// 有三个对应的查找最后一次出现的位置
+func LastIndex(s, sep string) int
+func LastIndexByte(s string, c byte) int
+func LastIndexAny(s, chars string) int
+func LastIndexFunc(s string, f func(rune) bool) int
+```
+
+### 字符串 `JOIN` 操作
+
+将字符串数组（或 slice）连接起来可以通过 `Join` 实现:
+
+`func Join(a []string, sep string) string`
+
