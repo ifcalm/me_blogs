@@ -187,3 +187,13 @@ fmt.Println(strings.Map(mapping, "Hello你#￥%……\n（'World\n,好Hello^(&(*
 
 大小写转换包含了 4 个相关函数，`ToLower`,`ToUpper` 用于大小写转换。`ToLowerSpecial`,`ToUpperSpecial` 可以转换特殊字符的大小写
 
+### 标题处理
+
+- `func Title(s string) string`
+- `func ToTitle(s string) string`
+- `func ToTitleSpecial(c unicode.SpecialCase, s string) string`
+
+标题处理包含 3 个相关函数，其中 `Title` 会将 s 每个单词的首字母大写，不处理该单词的后续字符。`ToTitle` 将 s 的每个字母大写。`ToTitleSpecial` 将 s 的每个字母大写，并且会将一些特殊字母转换为其对应的特殊大写字母
+
+### 修剪
+
