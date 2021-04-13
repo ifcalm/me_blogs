@@ -136,3 +136,54 @@ func LastIndexFunc(s string, f func(rune) bool) int
 
 `func Join(a []string, sep string) string`
 
+```
+fmt.Println(strings.Join([]string{"name=xxx", "age=xx"}, "&"))
+```
+
+### 字符串重复几次
+
+`func Repeat(s string, count int) string`
+
+将 s 重复 count 次，如果 count 为负数或返回值长度 len(s)*count 超出 string 上限会导致 panic
+
+```
+fmt.Println("ba" + strings.Repeat("na", 2))
+```
+
+### 字符替换
+
+`func Map(mapping func(rune) rune, s string) string`
+
+Map 函数，将 s 的每一个字符按照 mapping 的规则做映射替换，如果 mapping 返回值 <0 ，则舍弃该字符。该方法只能对每一个字符做处理，但处理方式很灵活，可以方便的过滤，筛选汉字等
+
+```
+mapping := func(r rune) rune {
+    switch {
+    case r >= 'A' && r <= 'Z': // 大写字母转小写
+        return r + 32
+    case r >= 'a' && r <= 'z': // 小写字母不处理
+        return r
+    case unicode.Is(unicode.Han, r): // 汉字换行
+        return '\n'
+    }
+    return -1 // 过滤所有非字母、汉字的字符
+}
+fmt.Println(strings.Map(mapping, "Hello你#￥%……\n（'World\n,好Hello^(&(*界gopher..."))
+```
+
+### 字符串子串替换
+
+进行字符串替换时，考虑到性能问题，能不用正则尽量别用，应该用这里的函数
+
+- `func Replace(s, old, new string, n int) string`, 用 new 替换 s 中的 old，一共替换 n 个, 如果 n < 0，则不限制替换次数，即全部替换
+- `func ReplaceAll(s, old, new string) string`, 该函数内部直接调用了函数 `Replace(s, old, new , -1)`
+
+### 大小写转换
+
+- `func ToLower(s string) string`
+- `func ToLowerSpecial(c unicode.SpecialCase, s string) string`
+- `func ToUpper(s string) string`
+- `func ToUpperSpecial(c unicode.SpecialCase, s string) string`
+
+大小写转换包含了 4 个相关函数，`ToLower`,`ToUpper` 用于大小写转换。`ToLowerSpecial`,`ToUpperSpecial` 可以转换特殊字符的大小写
+
