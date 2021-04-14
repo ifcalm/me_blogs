@@ -197,3 +197,12 @@ fmt.Println(strings.Map(mapping, "Hello你#￥%……\n（'World\n,好Hello^(&(*
 
 ### 修剪
 
+- `func Trim(s string, cutset string) string`, 将 s 左侧和右侧中匹配 cutset 中的任一字符的字符去掉
+- `func TrimLeft(s string, cutset string) string`, 将 s 左侧的匹配 cutset 中的任一字符的字符去掉
+- `func TrimRight(s string, cutset string) string`, 将 s 右侧的匹配 cutset 中的任一字符的字符去掉
+- `func TrimSpace(s string) string`, 将 s 左侧和右侧的间隔符去掉。常见间隔符包括：'\t', '\n', '\v', '\f', '\r', ' ', U+0085 (NEL)
+- `func TrimFunc(s string, f func(rune) bool) string`, 将 s 左侧和右侧的匹配 f 的字符去掉
+
+
+### Replacer 类型
+
