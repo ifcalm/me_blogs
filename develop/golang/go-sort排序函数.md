@@ -27,3 +27,8 @@ type Interface interface {
 数据集合实现了这三个方法后，即可调用该包的 `Sort()` 方法进行排序。 `Sort()` 方法定义如下:
 `func Sort(data Interface)`, Sort()方法惟一的参数就是待排序的数据集合
 
+
+### sort包已经支持的内部数据类型排序
+
+sort包原生支持`[]int`、`[]float64` 和`[]string` 三种内建数据类型切片的排序操作，即不必我们自己实现相关的 `Len()`、`Less()` 和 `Swap()` 方法
+
