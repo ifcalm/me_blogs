@@ -495,3 +495,23 @@ POST 是新增或提交数据，多次提交数据会创建多个资源，所以
 
 ### 正确的网址
 
+#### 用什么来标记服务器上的资源呢？
+
+用的是 URI，也就是统一资源标识符（Uniform Resource Identifier）。因为它经常出现在浏览器的地址栏里，简称网址
+
+URI 不完全等同于网址，它包含有 `URL` 和 `URN` 两个部分，在 HTTP 世界里用的网址实际上是 URL——统一资源定位符（Uniform Resource Locator）。但因为 URL 实在是太普及了，所以常常把这两者简单地视为相等
+
+#### URI 的格式
+
+URI 本质上是一个字符串，这个字符串的作用是唯一地标记资源的位置或者名字
+
+URI 最常用的形式，由 scheme、host:port、path 和 query 四个部分组成，但有的部分可以视情况省略
+
+`scheme://` + `host:port` + `path` + `?query`
+
+#### URI 的基本组成
+
+URI 第一个组成部分叫 scheme，翻译成中文叫协议名，表示资源应该使用哪种协议来访问
+
+最常见的当然就是http了，表示使用 HTTP 协议。另外还有https，表示使用经过加密、安全的 HTTPS 协议。此外还有其他不是很常见的 scheme，例如 ftp、ldap、file、news 等
+
