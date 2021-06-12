@@ -702,3 +702,25 @@ HTTP 是明文传输，明文意思就是协议里的报文（准确地说是 he
 
 ### HTTP 的实体数据
 
+MIME 是一个很大的标准规范，但 HTTP 只取了其中的一部分，用来标记 body 的数据类型，这就是我们平常总能听到的`MIME type`
+
+MIME 把数据分成了八大类，每个大类下再细分出多个子类，形式是`type/subtype`的字符串，刚好也符合了 HTTP 明文的特点，所以能够很容易地纳入 HTTP 头字段里
+
+这里列举一下在 HTTP 里经常遇到的几个类别:
+
+- text：即文本格式的可读数据，我们最熟悉的应该就是 text/html 了，表示超文本文档，此外还有纯文本 text/plain、样式表 text/css 等
+- image：即图像文件，有 image/gif、image/jpeg、image/png 等
+- audio/video：音频和视频数据，例如 audio/mpeg、video/mp4 等
+- application：数据格式不固定，可能是文本也可能是二进制，必须由上层应用程序来解释。常见的有 application/json，application/javascript、application/pdf 等，另外，如果实在是不知道数据是什么类型，就会是 application/octet-stream，即不透明的二进制数据
+
+但仅有 MIME type 还不够，因为 HTTP 在传输时为了节约带宽，有时候还会压缩数据，为了不要让浏览器继续猜，还需要有一个`Encoding type`，告诉数据是用的什么编码格式，这样对方才能正确解压缩，还原出原始的数据
+
+比起 MIME type 来说，Encoding type 就少了很多，常用的只有下面三种：
+- gzip：GNU zip 压缩格式，也是互联网上最流行的压缩格式
+- deflate：zlib（deflate）压缩格式，流行程度仅次于 gzip
+- br：一种专门为 HTTP 优化的新压缩算法（Brotli）
+
+#### 数据类型使用的头字段
+
+有了 MIME type 和 Encoding type，无论是浏览器还是服务器就都可以轻松识别出 body 的类型，也就能够正确处理数据了
+
