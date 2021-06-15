@@ -103,12 +103,70 @@ func main() {
 
 `bufio.NewReader()` 构造函数的签名为：`func NewReader(rd io.Reader) *Reader`该函数的实参可以是满足 `io.Reader` 接口的任意对象，函数返回一个新的带缓冲的 `io.Reader` 对象，它将从指定读取器读取内容
 
-返回的读取器对象提供一个方法 `ReadString(delim byte)`，该方法从输入中读取内容，直到碰到 `delim` 指定的字符，然后将读取到的内容连同 `delim` 字符一起放到缓冲区
+返回的读取器对象提供一个方法 `ReadString(delim byte)`，该方法从输入中读取内容，直到碰到 `delim` 指定的字符，**然后将读取到的内容连同 `delim` 字符一起放到缓冲区**
 
 `ReadString` 返回读取到的字符串，如果碰到错误则返回 `nil`。如果它一直读到文件结束，则返回读取到的字符串和 `io.EOF`。如果读取过程中没有碰到 `delim` 字符，将返回错误 `err != nil`
 
 在上面的例子中，我们会读取键盘输入，直到回车键`\n`被按下, 屏幕是标准输出 `os.Stdout`, `os.Stderr` 用于显示错误信息，大多数情况下等同于 `os.Stdout`
 
+
+### 循环读取输入
+
+```
+package main
+
+import (
+	"fmt"
+	"io"
+)
+
+func main() {
+	var a, b int
+	for {
+        //参数之间使用空格界别
+		_, err := fmt.Scan(&a, &b)
+		if err == io.EOF {
+			break
+		}
+		fmt.Println(a + b)
+	}
+}
+```
+
+**另一种方式, 按行读取:**
+```
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"os"
+    "strings"
+)
+
+func main() {
+	inputReader := bufio.NewReader(os.Stdin)
+	for {
+		input, err := inputReader.ReadString('\n')
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			break
+		}
+        //替换掉最后的换行符，以免造成格式报错
+        input = strings.Replace(input, "\n", "", -1)
+		s := []byte(input)
+		start, end := 0, len(s)-1
+		for start < end {
+			s[start], s[end] = s[end], s[start]
+			start++
+			end--
+		}
+		fmt.Print(string(s))
+	}
+}
+```
 
 ------------------------------------------------
 
