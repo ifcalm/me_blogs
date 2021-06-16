@@ -1,5 +1,7 @@
 ## 字符串处理
 
+## strings 包
+
 由于 string 类型可以看成是一种特殊的 slice 类型，因此获取长度可以用内置的函数 `len`；同时支持 切片 操作，因此，子串获取很容易
 
 ### 字符串比较
@@ -204,5 +206,43 @@ fmt.Println(strings.Map(mapping, "Hello你#￥%……\n（'World\n,好Hello^(&(*
 - `func TrimFunc(s string, f func(rune) bool) string`, 将 s 左侧和右侧的匹配 f 的字符去掉
 
 
-### Replacer 类型
+----------------------------------------------------------
+
+## bytes 包
+
+该包定义了一些操作 byte slice 的便利操作。因为字符串可以表示为 `[]byte`，因此，bytes 包定义的函数、方法等和 strings 包很类似
+
+为了方便，会称呼 `[]byte` 为字节数组
+
+----------------------------------------------
+
+## strconv 包
+
+字符串和基本数据类型之间转换，这里的基本数据类型包括：布尔、整型和浮点型等
+
+### 字符串转为整型
+
+- ParseInt
+- ParseUint
+- Atoi
+
+```
+func ParseInt(s string, base int, bitSize int) (i int64, err error)
+func ParseUint(s string, base int, bitSize int) (n uint64, err error)
+func Atoi(s string) (i int, err error)
+```
+
+### 整型转为字符串
+
+```
+func FormatUint(i uint64, base int) string    // 无符号整型转字符串
+func FormatInt(i int64, base int) string    // 有符号整型转字符串
+func Itoa(i int) string
+```
+
+### 重点
+
+- func Atoi(s string) (i int, err error) , string=> int
+- func Itoa(i int) string , int=> string
+
 
