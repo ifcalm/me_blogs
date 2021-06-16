@@ -139,3 +139,32 @@ m_1 := map[string]string{
 }
 ```
 
+### golang 计算四舍五入
+
+```
+package main
+ 
+import (
+    "fmt"
+    "math"
+)
+ 
+func main() {
+    var s float64
+    for {
+        _, err := fmt.Scanln(&s)
+        if err != nil {
+            break
+        }
+        fmt.Println(int(math.Floor(s+0.5)))
+    }
+}
+```
+
+go官方的math 包中提供了取整的方法:
+- `math.Ceil()`, 向上取整
+- `math.Floor()`, 向下取整
+
+golang没有类似python的round()函数，可以让原数字先+0.5，然后向下取整
+
+

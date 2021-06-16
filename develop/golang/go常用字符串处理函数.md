@@ -307,6 +307,7 @@ func main() {
 - strings.Replace(), 字符串替换
 - strings.Fields(), strings.Split(), 字符串分割为字符串切片
 - strings.Join(), 把字符串切片拼接为字符串
+- strings.Contains(str, substr), 判断str中是否包含substr
 
 
 --------------------------------------------
