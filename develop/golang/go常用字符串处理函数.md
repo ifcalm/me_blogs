@@ -246,3 +246,16 @@ func Itoa(i int) string
 - func Itoa(i int) string , int=> string
 
 
+----------------------------------------------------
+
+## string 和 []byte 的转换
+
+```
+//string to []byte
+s1 := "ifcalm"
+b := []byte(s1)
+
+//[]byte to string
+s2 := string(b)
+```
+
