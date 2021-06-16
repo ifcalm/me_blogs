@@ -259,3 +259,46 @@ b := []byte(s1)
 s2 := string(b)
 ```
 
+
+----------------------------------------------------
+
+## int 转 string 的几种方式对比
+
+- `strconv.Itoa()`函数的参数是一个整型数字，它可以将数字转换成对应的字符串类型的数字
+- `string()`函数的参数若是一个整型数字，它将该整型数字转换成`ASCII`码值等于该整形数字的字符。`string()`函数是Go语言的内置函数，不需要导入任何包
+
+```
+package main
+
+import "fmt"
+
+func main() {
+	n := 97
+	str := string(n)
+	fmt.Printf("%s, %T", str, str)
+}
+```
+运行结果为: `a, string`
+
+因为`ASCII`码值为97对应的字符是`a`，所以`string(97)`的结果是`a`
+
+
+```
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	n := 97
+	str := strconv.Itoa(n)
+	fmt.Printf("%s, %T", str, str)
+}
+```
+运行结果为: `97, string`, `strconv.Itoa()`函数它可以将数字转换成对应的字符串类型的数字
+
+
+-------------------------------------------------
+
