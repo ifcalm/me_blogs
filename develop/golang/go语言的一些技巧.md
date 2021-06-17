@@ -186,13 +186,44 @@ golang没有类似python的round()函数，可以让原数字先+0.5，然后向
 ### 链表定义
 
 ```
-type ListNode struct {
+//链表中的节点数据，包含一个数据域，一个指针域，指向下一个节点
+type Node struct {
     Data interface{}
-    Next *ListNode
+    Next *Node
 }
 
-func NewListNode() *ListNode {
-    return &ListNode{}
+//链表，包含链表的头指针和链表的长度
+type List struct {
+    Head *Node
+    Length int
+}
+
+//创建一个节点
+func CreateNode(v interface{}) *Node {
+    return &Node{v, nil}
+}
+
+//创建一个链表
+func CreateList() *List {
+    head := CreateNode(nil)
+    return &List{head, 0}
+}
+
+//往链表头增加一个节点
+func (l *List) AddNode(data interface{}) {
+    newNode := CreateNode(data)
+    //链表长度+1
+    defer func() {
+        l.Length++
+    }()
+
+    //设置新的头节点
+    if l.Length == 0 {
+        l.Head = newNode
+    } else {
+        newNode.Next = l.Head
+        l.Head = newNode
+    }
 }
 ```
 
