@@ -225,7 +225,65 @@ func (l *List) AddNode(data interface{}) {
         l.Head = newNode
     }
 }
+
+//往链表尾加一个节点
+func (l *List) AppendNode(data interface{}) {
+    newNode := CreateNode(data)
+    //链表长度+1
+    defer func() {
+        l.Length++
+    }()
+
+    if l.Length == 0 {
+        l.Head = newNode
+    } else {
+        current := l.Head
+        for current.Next != nil {  //循环找到最后一个节点
+            current = current.Next
+        }
+        current.Next = newNode   //把新节点地址赋给最后一个节点的Next
+    }
+}
 ```
+
+#### 链表的一些复杂操作
+
+- 往i位置插入一个节点
+- 删除第i个节点
+- 遍历链表
+
+```
+//往i位置插入一个节点
+func (l *List) Insert(i int, data interface{}) {
+    defer func() {
+        l.Length++
+    }()
+
+    if i >= l.Length {
+        l.AppendNode(data)
+        return
+    }
+
+    newNode := CreateNode(data)
+
+    //找到第i个节点和 i+1 位置的节点
+    base := 1
+    pre := l.Head
+    for base != i {
+        pre = pre.Next
+        base++
+    }
+    //交换节点的指针指向
+    after := pre.Next
+    pre.Next = newNode
+    newNode.Next = after
+}
+
+//删除第 i 个节点
+
+```
+
+---------------------------------------------------
 
 ### 二叉树定义
 
