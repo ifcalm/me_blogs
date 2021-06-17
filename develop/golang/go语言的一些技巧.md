@@ -183,3 +183,29 @@ golang没有类似python的round()函数，可以让原数字先+0.5，然后向
 
 -------------------------------------------------------
 
+### 链表定义
+
+```
+type ListNode struct {
+    Data interface{}
+    Next *ListNode
+}
+
+func NewListNode() *ListNode {
+    return &ListNode{}
+}
+```
+
+### 二叉树定义
+
+```
+type TreeNode struct {
+    Data interface{}
+    LeftChild *TreeNode
+    RightChild *TreeNode
+}
+
+func NewTreNode() *TreeNode {
+    return &TreeNode{}
+}
+```
