@@ -280,6 +280,27 @@ func (l *List) Insert(i int, data interface{}) {
 }
 
 //删除第 i 个节点
+func (l *List) Delete(i int) {
+    defer func() {
+        l.Length--
+    }
+
+    //删除第一个节点，把head指向第二个节点即可
+    if i == 1 {
+        l.Head = l.Head.Next
+    }
+
+    //找到第 i-1 位置的节点, 找到第 i+1 位置的节点, 修改 i-1 节点的Next即可
+    current := l.Head
+    j := 0
+    for j != i-1 {
+        current = current.Next
+        j++
+    }
+    after := current.Next.Next
+    current.Next = after
+}
+
 
 ```
 
