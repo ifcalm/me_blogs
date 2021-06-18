@@ -301,7 +301,19 @@ func (l *List) Delete(i int) {
     current.Next = after
 }
 
-
+//遍历链表
+func (l *List) Scan() {
+    //临时保存头节点，避免丢失
+    current := l.Head
+    i := 1
+    for current.Next != nil {
+        fmt.Printf("第%d的节点是%d\n", i, current.Data)
+        current = current.Next
+        i++
+    }
+    //最后一个节点
+    fmt.Printf("第%d的节点是%d\n", i, current.Data)
+}
 ```
 
 ---------------------------------------------------
