@@ -312,3 +312,25 @@ func main() {
 
 --------------------------------------------
 
+### 进制转换函数
+
+```
+var v int64 = 12     //默认10进制
+s2 := strconv.FormatInt(v, 2)   //10 转2进制
+s8 := strconv.FormatInt(v, 8)   //10 转8进制
+s10 := strconv.FormatInt(v, 10) //10 转10进制
+s16 := strconv.FormatInt(v, 16) //10 转16进制
+
+
+var sv = "11"
+fmt.Println(strconv.ParseInt(sv, 16, 32)) // 16 转 10
+fmt.Println(strconv.ParseInt(sv, 10, 32)) // 10 转 10
+fmt.Println(strconv.ParseInt(sv, 8, 32))  // 8 转 10
+fmt.Println(strconv.ParseInt(sv, 2, 32))  // 2 转 10
+```
+
+转换时需去掉 `0x`, `0b` 等进制标识符
+
+-----------------------------------------------------
+
+
