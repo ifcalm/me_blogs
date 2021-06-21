@@ -229,7 +229,7 @@ fmt.Println(strings.Map(mapping, "Hello你#￥%……\n（'World\n,好Hello^(&(*
 ```
 func ParseInt(s string, base int, bitSize int) (i int64, err error)
 func ParseUint(s string, base int, bitSize int) (n uint64, err error)
-func Atoi(s string) (i int, err error)
+func Atoi(s string) (i int, err error), 只能转换包含整数的字符串，对浮点型的字符串无效
 ```
 
 ### 整型转为字符串
