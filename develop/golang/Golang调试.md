@@ -32,3 +32,9 @@ trace
 vet
 ```
 
+- nm：查看符号表（等同于系统 nm 命令）
+- objdump：反汇编工具，分析二进制文件（等同于系统 objdump 命令）
+- pprof：指标，性能分析工具
+- cover：生成代码覆盖率
+- trace：采样一段时间，指标跟踪分析工具
+- compile：代码汇编
