@@ -7,3 +7,5 @@ test new mac
 
 test test
 
+新的mac，测试下 ssh 连接问题
+
