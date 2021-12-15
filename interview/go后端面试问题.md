@@ -171,23 +171,23 @@ chan、mutex 之类的胡扯就对了
 
 -----------------------------------------------------
 
-### slice, map, channel 函数传参形式
+### `slice`, `map`, `channel` 函数传参形式
 
 ### gc 垃圾回收机制，三色标记法
 
-### channel 的实现
+### `channel` 的实现
 
-### context
+### `context`
 
 ### 分布式事务
 
-### new make 的区别，make 为什么不能返回指针
+### `new` `make` 的区别，`make` 为什么不能返回指针
 
 ### 什么情况下go runtime 会创建一个协程
 
-### slice 自动扩容，map 自动扩容
+### `slice` 自动扩容，`map` 自动扩容
 
-### main 函数 和 init 函数的区别
+### `main` 函数 和 `init` 函数的区别
 
 main 对应本包，init 对应所有包
 
@@ -196,15 +196,15 @@ main 对应本包，init 对应所有包
 ### 多协程同步机制
 
 - 锁
-- waitgroup
-- channel
-- context
+- `waitgroup`
+- `channel`
+- `context`
 
 ### 切片和数组的区别
 
 ### GMP 模型
 
-### defer
+### `defer`
 
 ### 协程负载高排查方法
 
@@ -212,9 +212,9 @@ main 对应本包，init 对应所有包
 
 ### map 找不到key 会怎样
 
-### channel 线程安全吗，为什么
+### `channel` 线程安全吗，为什么
 
-### interface
+### `interface`
 
 ### 函数闭包
 
