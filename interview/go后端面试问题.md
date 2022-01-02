@@ -218,3 +218,218 @@ main 对应本包，init 对应所有包
 
 ### 函数闭包
 
+-----------------------------------------------------
+
+### 什么是 goroutine，如何停止它
+
+Go 协程是与其他函数同时运行的函数。 可以认为Go 协程是轻量级的线程，由Go 运行时来管理。 在函数调用前加上`go` 关键字，这次调用就会在一个新的goroutine 中并发执行。 当被调用的函数返回时，这个goroutine 也自动结束
+
+- goroutine 是Go语言中并发的执行单位
+- channel是Go语言中各个并发goroutine之前的通信机制
+
+要创建 goroutine，在函数前加关键字 `go` 即可 `go f(x, y, z)`
+
+可以通过向 Goroutine 发送一个信号通道来停止它
+```
+package main
+func main() {
+    quit := make(chan bool)
+    go func() {
+        for {
+            select {
+                case <-quit:
+                return
+                default:
+                ...
+            }
+        }
+    }()
+    ...
+    quit <-true
+}
+```
+
+### 如何在运行时检查变量类型
+
+**类型开关(Type Switch)**
+
+类型开关(Type Switch)是在运行时检查变量类型的最佳方式。类型开关按类型而不是值来评估变量。每个 Switch 至少包含一个 case 用作条件语句，如果没有一个 case 为真，则执行 default
+
+
+通常我们可能会有一连串的 `if … else` 结构来判断接口类型，以便于做出不同的决策
+```
+var e interface{}
+
+if e == nil {
+    ...
+} else if v, ok := e.(int); ok {
+    ...
+} esle if v, ok := e.(float32); ok {
+    ...
+} else if v, ok := e.(string); ok {
+    ...
+} esle if v, ok := e.(bool); ok {
+    ...
+}
+```
+
+如果每次都这样写，相当费劲。Golang 关键字 `swtich` 支持一种非常便捷的写法，你可以这样:
+```
+var e interface{}
+
+switch v := e.(type) {
+    case nil:
+        ...
+    case int, uint, int32, uint32:
+        ...
+    case string:
+        ...
+    case bool:
+        ...
+    default:
+        ...
+}
+```
+
+注意上面的语法：`e.(type)` 只能用在 `switch` 关键字后面，它会返回 e 接口中的值部分
+
+### Go 两个接口之间可以存在什么关系
+
+如果两个接口有相同的方法列表，那么他们就是等价的，可以相互赋值。如果
+接口 A 的方法列表是接口 B 的方法列表的子集，那么接口 B 可以赋值给接口A。接口查询是否成功，要在运行期才能够确定
+
+### Go 当中同步锁有什么特点？作用是什么
+
+Go 语言包中的 sync 包提供了两种锁类型：sync.Mutex 和 sync.RWMutex，前者是互斥锁，后者是读写锁
+
+互斥锁是传统的并发程序对共享资源进行访问控制的主要手段，在 Go 中，似乎更推崇由 channel 来实现资源共享和通信
+
+当一个 Goroutine（协程）获得了 Mutex 后，其他 Goroutine就只能乖乖的等待，除非该 Goroutine 释放了该 Mutex。RWMutex 在读锁占用的情况下，会阻止写，但不阻止读 RWMutex。 在写锁占用情况下，会阻止任何其他Goroutine（无论读和写）进来，整个锁相当于由该 Goroutine 独占同步锁的作用是保证资源在使用时的独有性，不会因为并发而导致数据错乱，保证系统的稳定性
+
+建议：同一个互斥锁的成对锁定和解锁操作放在同一层次的代码块中。
+使用锁的经典模式：
+```
+var lck sync.Mutex
+func foo {
+    lck.Lock()
+    defer lck.Unlock()
+    ...
+}
+```
+
+`lck.Lock()` 会阻塞直到获取锁，然后利用 `defer` 语句在函数返回时自动释放锁
+
+### go 读写锁
+
+读写锁是分别针对读操作和写操作进行锁定和解锁操作的互斥锁。在 Go 语言中，读写锁由结构体类型 `sync.RWMutex` 代表
+
+- 写锁定情况下，对读写锁进行读锁定或者写锁定，都将阻塞；而且读锁与写锁之间是互斥的
+
+RWMutex 提供四个方法:
+```
+func (*RWMutex) Lock      //写锁
+func (*RWMutex) Unlock    //写解锁
+func (*RWMutex) RLock()   //读锁
+func (*RWMutex) RUnlock() //读解锁
+```
+
+```
+package main
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+var m *sync.RWMutex
+func main() {
+    wg := sync.WaitGroup{}
+    wg.Add(20)
+    data := 0
+    for i := 0; i < 10; i++ {
+        go func(t int) {
+            m.RLock()
+            defer m.RUnlock()
+            fmt.Println(data)
+            wg.Done()
+            time.Sleep(2 * time.Second)
+        }(i)
+
+        go func(t int) {
+            m.Lock()
+            defer m.Unlock()
+            data += t
+            fmt.Println(data, t)
+            wg.Done()
+            time.Sleep(2 * time.Second)
+        }(i)
+    }
+    wg.Wait()
+}
+```
+
+### Go 语言当中 Channel（通道）有什么特点，需要注意什么
+
+- 如果从一个 nil 的 channel 中接收数据，会造成阻塞
+- 给一个已经关闭的 channel 发送数据， 会引起 panic
+- 从一个已经关闭的 channel 接收数据， 如果缓冲区中为空，则返回零值
+
+### Go 语言当中 Channel 缓冲有什么特点
+
+无缓冲的 channel 是同步的，而有缓冲的 channel 是非同步的
+
+### Go 语言中 cap 函数可以作用于哪些内容
+
+- array
+- slice
+- channel
+
+### Go Convey 是什么？一般用来做什么
+
+- go convey 是一个支持 Golang 的单元测试框架
+- go convey 能够自动监控文件修改并启动测试，并可以将测试结果实时输出到 Web 界面
+- go convey 提供了丰富的断言简化测试用例的编写
+
+### Go 语言当中 new 的作用是什么
+
+new 的作用是初始化一个内置类型的指针， new 函数是内建函数
+
+- 使用 new 函数来分配空间
+- 传递给 new 函数的是一个**类型**，而不是一个值
+- 返回值是指向这个新分配的地址的指针
+
+### Go 语言中 make 的作用是什么
+
+make 的作用是为 slice, map, chan 进行初始化。
+make 函数是内建函数
+
+make()函数的目的和 new()不同, make仅仅用于创建 slice, map, channel。 而且返回类型是实例
+
+### Printf()，Sprintf()，FprintF() 都是格式化输出，有什么不同
+
+虽然这三个函数，都是格式化输出，但是输出的目标不一样
+
+- Printf 是标准输出，一般是屏幕，也可以重定向
+- Sprintf()是把格式化字符串输出到指定的字符串中
+- Fprintf()是把格式化字符串输出到文件中
+
+### Go 语言当中数组和切片的区别是什么
+
+数组固定长度。数组长度是数组类型的一部分，所以`[3]int` 和`[4]int` 是两种不同的数组类型数组需要指定大小，不指定也会根据初始化，自动推算出大小，大小不可改变。数组是通过值传递的
+
+切片可以改变长度。切片是轻量级的数据结构，三个属性，指针，长度，容量
+不需要指定大小切片是地址传递可以通过数组来初始化，也可以通过内置函数 make()来初始化
+
+### Go 语言当中值传递和地址传递如何运用？有什么区别
+
+- 值传递只会把参数的值复制一份放进对应的函数，两个变量的地址不同，不可相互修改
+- 地址传递会将变量地址传入对应的函数，在函数中可以对该变量进行值内容的修改
+
+### Go 语言当中数组和切片在传递的时候的区别是什么
+
+- 数组是值传递
+- 切片是引用传递
+
+
+### 
