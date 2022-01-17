@@ -193,6 +193,8 @@ chan、mutex 之类的胡扯就对了
 
 ### `slice` 自动扩容，`map` 自动扩容
 
+
+
 ### `main` 函数 和 `init` 函数的区别
 
 main 对应本包，init 对应所有包
